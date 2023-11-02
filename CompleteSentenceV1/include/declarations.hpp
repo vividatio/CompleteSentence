@@ -40,6 +40,9 @@ typedef struct time {
   }
 } timeT, *timeP;
 
+
+
+
 /* Konstanten */
 const unsigned long cRefreshTimeInterval = 3 /*Sek*/ * 1000 /*ms*/;
 

@@ -75,8 +75,14 @@ int CLEDControl::fill_LED_Buffer(int counter) {
 
 
 /* dekodiert die aktuelle Uhrzeit in den Framebuffer */
+/* die einzelnen Worte haben einen Start und einen Endindex */
 int CLEDControl::decodeTime(timeP actualTimePointer) {
   m_error_code = ERR_NO_ERROR;
+
+
+
+  /* wann leuchten die Worte auf */
+
 
 
 
