@@ -28,8 +28,11 @@
 // static int cnt = 0;
 
 StateT          activeState = st_idle;
-unsigned long   prevMillis = 0;
+unsigned long   prevTimeMillis = 0;
+unsigned long   prevLEDMillis = 0;
 unsigned long   actualMillis = millis(); 
+
+unsigned int    GPCnt = 0;
 
 timeT           actualTime;
 
@@ -78,7 +81,9 @@ int fnc_init() {
   Serial.println("entry init state");
 
   actualMillis = millis();
-  prevMillis = actualMillis;
+  prevTimeMillis = actualMillis;
+  prevLEDMillis = actualMillis;
+
 
   NTP.update_via_NTP();
 
@@ -100,34 +105,43 @@ int fnc_loop() {
   /* Interval neu beginnen */
   actualMillis = millis();
 
-  /* Zeiterfassung */
-  if ((actualMillis - prevMillis) >= cRefreshTimeInterval ) {
-    prevMillis = actualMillis;
+//   /* Zeiterfassung */
+//   if ((actualMillis - prevTimeMillis) >= cRefreshTimeInterval ) {
+//     prevTimeMillis = actualMillis;
 
-    /* ----------------------------------------- Timer Kram ---------------------------------------------- */
-    /* Refreshtime ausloesen */
-    actualTime.Hours = NTP.hour12(&actualTime.pm);
-    actualTime.Minutes = NTP.minutes();
-    actualTime.Seconds = NTP.seconds();
+//     /* ----------------------------------------- Timer Kram ---------------------------------------------- */
+//     /* Refreshtime ausloesen */
+//     actualTime.Hours = NTP.hour12(&actualTime.pm);
+//     actualTime.Minutes = NTP.minutes();
+//     actualTime.Seconds = NTP.seconds();
     
-    /* Ausgabe */
-    Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
+//     /* Ausgabe */
+//     Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
 
-    /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
-    NTP.update_via_NTP();
-
-
-    /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */
-    LED.decodeTime(&actualTime);
+//     /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
+//     NTP.update_via_NTP();
 
 
+//     /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */
+// //    LED.decodeTime(&actualTime);
+//   }
+
+  /* LED refresh */
+  if ((actualMillis - prevTimeMillis) >= cRefreshLEDinterval ) {
+    prevTimeMillis = actualMillis;
+/* ----------------------------------------- LEDs ansteuern ------------------------------------------ */
+    LED.fill_LED_Buffer(GPCnt);
+    LED.show();
+
+    GPCnt++;
+    if (GPCnt > NUM_LEDS) GPCnt = 0;
+   
   }
 
   activeState = st_loop;
 
   return ERR_NO_ERROR;
 }
-
 
 
 

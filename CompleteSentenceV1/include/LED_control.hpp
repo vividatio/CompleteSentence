@@ -1,7 +1,13 @@
 #ifndef LED_CONTROL_HPP
 #define LED_CONTROL_HPP
 /* der Define ist ein Modifizierer fuer die FastLED Lib. Weil kein SPI vorhanden */
+
+//#define FASTLED_ESP8266_RAW_PIN_ORDER
 #define FASTLED_ESP8266_NODEMCU_PIN_ORDER
+//#define FASTLED_ESP8266_D1_PIN_ORDER
+
+//#define FASTLED_INTERNAL
+
 #include <FastLED.h>    /* das wird fuer die LED"s gebraucht */
 
 #include "declarations.hpp"

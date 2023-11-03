@@ -66,9 +66,25 @@ int CLEDControl::map_array_to_screen(bool zz_on, bool invert_color) {
 
 int CLEDControl::fill_LED_Buffer(int counter) {
   for (int i = 0; i < NUM_LEDS; i++) {
-    leds[i].r = (i + counter) & 255;
-    leds[i].g = (i - counter) & 255;
-    leds[i].b = (i + (2 * counter)) & 255;
+    if (i == counter) {
+      leds[i].r = i;
+      leds[i].g = i;
+      leds[i].b = i;  
+    } else {
+      leds[i].r = 0;
+      leds[i].g = 0;
+      leds[i].b = 0;  
+    }
+      // if (leds[i].r > 0) {
+      //   leds[i].r -= 1;
+      // } else leds[i].r = 0;
+      // if (leds[i].g > 0) {
+      //   leds[i].g -= 1;
+      // } else leds[i].g = 0;
+      // if (leds[i].b > 0) {
+      //   leds[i].b -= 1;
+      // } else leds[i].b = 0;
+   // }
   }
   return 0;
 }
