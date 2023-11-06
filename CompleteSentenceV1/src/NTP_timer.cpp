@@ -4,7 +4,7 @@
 
 CNTPtimer::CNTPtimer(){
     m_utcOffsetInSeconds = 3600;  // Sekunden
-    m_TimeUpdateInterval = 60000; // Millisekunden
+    m_TimeUpdateInterval = 600000; // Millisekunden
 
     m_timeNTPClient = NULL;
 }
@@ -55,8 +55,12 @@ unsigned char CNTPtimer::hour12(bool *pm) {
   
   unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
   
-  *pm =(12 < NTPHours); 
-  return *pm ? (NTPHours - 12) : NTPHours;
+  *pm = (12 < NTPHours); 
+  unsigned char result = *pm ? (NTPHours - 12) : NTPHours;
+
+  if (result == 0) result = 12; // meine Uhr kann keine NULL 0 Uhr ist dann 12 pm
+  
+  return result;
 }
 
 unsigned char CNTPtimer::minutes(){

@@ -2,8 +2,6 @@
 /* WordClock "CompleteSentence" Michal Knorr 2023 Oct, Nov.                                                           */
 /* Based on NodeMCU ESP8266 V3 CP2102                                                                                 */
 /* ****************************************************************************************************************** */
-
-
 #include <Arduino.h>
 
 /* ****************************************************************************************************************** */
@@ -32,7 +30,7 @@ unsigned long   prevTimeMillis = 0;
 unsigned long   prevLEDMillis = 0;
 unsigned long   actualMillis = millis(); 
 
-unsigned int    GPCnt = 0;
+uint16_t        GPCnt = 0;
 
 timeT           actualTime;
 
@@ -88,10 +86,12 @@ int fnc_init() {
   NTP.update_via_NTP();
 
   if (NTP.check()) {
-    activeState = st_init;
+    activeState = st_loop;
+    Serial.println("time set. Switching to loop");
+    return ERR_NO_ERROR;
   }
   Serial.println("time not set yet. waiting for NTP-update..");
-  activeState = st_loop;
+  activeState = st_init;
 
   return ERR_NO_ERROR;
 }
@@ -102,35 +102,38 @@ int fnc_init() {
 /* loop state function */
 int fnc_loop() {
 
+
+
   /* Interval neu beginnen */
   actualMillis = millis();
+  
+  //Serial.printf("%d\n", actualMillis - prevTimeMillis);
 
-//   /* Zeiterfassung */
-//   if ((actualMillis - prevTimeMillis) >= cRefreshTimeInterval ) {
-//     prevTimeMillis = actualMillis;
+  /* Zeiterfassung */
+  if ((actualMillis - prevTimeMillis) >= cRefreshTimeInterval ) {
+    prevTimeMillis = actualMillis;
 
-//     /* ----------------------------------------- Timer Kram ---------------------------------------------- */
-//     /* Refreshtime ausloesen */
-//     actualTime.Hours = NTP.hour12(&actualTime.pm);
-//     actualTime.Minutes = NTP.minutes();
-//     actualTime.Seconds = NTP.seconds();
+    /* ----------------------------------------- Timer Kram ---------------------------------------------- */
+    /* Refreshtime ausloesen */
+    actualTime.Hours = NTP.hour12(&actualTime.pm);
+    actualTime.Minutes = NTP.minutes();
+    actualTime.Seconds = NTP.seconds();
     
-//     /* Ausgabe */
-//     Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
+    /* Ausgabe */
+    Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
+    /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
+    NTP.update_via_NTP();
 
-//     /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
-//     NTP.update_via_NTP();
-
-
-//     /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */
-// //    LED.decodeTime(&actualTime);
-//   }
+    /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */
+    LED.decodeTime(&actualTime);
+    LED.PrintSimulation();
+  }
 
   /* LED refresh */
-  if ((actualMillis - prevTimeMillis) >= cRefreshLEDinterval ) {
-    prevTimeMillis = actualMillis;
+  if ((actualMillis - prevLEDMillis) >= cRefreshLEDinterval ) {
+    prevLEDMillis = actualMillis;
 /* ----------------------------------------- LEDs ansteuern ------------------------------------------ */
-    LED.fill_LED_Buffer(GPCnt);
+    //LED.fill_LED_Buffer(GPCnt);
     LED.show();
 
     GPCnt++;
@@ -169,7 +172,7 @@ void loop() {
   }
 
 
-  delay(250);
+  delay(50);
 
 // /* LEDs aktualisieren */
 //   // put your main code here, to run repeatedly:

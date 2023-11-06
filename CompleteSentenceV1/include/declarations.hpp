@@ -2,15 +2,15 @@
 #define DECLARATIONS_HPP
 
 /* LED zeug */
-#define LED_PIN     6
-#define NUM_LEDS    144 /* 18*8 */
+#define LED_PIN     5
+#define NUM_LEDS    153 /* 17*9 */
 #define BRIGHTNESS  64
-#define LED_TYPE    WS2811
+#define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 
 /* graphical stuff */ 
-#define LED_WIDTH     18
-#define LED_HEIGHT    8 S
+#define LED_WIDTH     17
+#define LED_HEIGHT    9
 
 
 
@@ -44,7 +44,7 @@ typedef struct time {
 
 
 /* Konstanten */
-const unsigned long cRefreshTimeInterval = 3 /*Sek*/ * 1000 /*ms*/;
+const unsigned long cRefreshTimeInterval = 5 /*Sek*/ * 1000 /*ms*/;
 const unsigned long cRefreshLEDinterval =  /*0 Sek*/ 200 /*ms    Update mit 10 Hz*/;
 
 #endif
