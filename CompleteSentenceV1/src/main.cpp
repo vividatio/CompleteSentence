@@ -163,9 +163,10 @@ inline int fnc_loop() {
   //  LED.PrintSimulation();
 
     /* ----------------------------------------- LEDArray fuellen ------------------------------------------ */
+#ifdef MAPPING
     LED.fill_LED_Buffer();
-
-    //LED.toggleSecondsLED();
+#endif
+    LED.toggleSecondsLED();
    
     #ifdef DEBUG
     Serial.printf("LED's update complete");

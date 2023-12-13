@@ -25,6 +25,9 @@ int CLEDControl::init() {
   m_onColor.g = 44;
   m_onColor.b = 14;
 
+  m_onColor = CRGB::Fuchsia;
+
+
   clear();
 
   return m_error_code;
@@ -133,7 +136,12 @@ int CLEDControl::fill_LED_Buffer() {
   m_error_code = ERR_NO_ERROR;
   int u = 0;
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
+
+#ifdef MAPPING    
     u = m_mappingTable[i];
+#else
+    u = i;
+#endif
 
     leds[i] = framebuffer[u];
   }
@@ -336,9 +344,6 @@ int CLEDControl::PrintSimulation() {
   }
   Serial.printf("\n");
 
-  
-
-
   return m_error_code;
 }
 
@@ -348,13 +353,19 @@ int CLEDControl::toggleSecondsLED() {
   m_SecondsLED =!m_SecondsLED;
 
  if (m_SecondsLED) {
-    leds[SECONDS_LED] = 0;
-    Serial.println("aus");
+    leds[SECONDS_LED] = CRGB::Black;
+    // Serial.println("aus");
   } else {
     leds[SECONDS_LED] = m_onColor;
-    Serial.println("an");
+    // Serial.println("an");
   }
   
 
   return m_error_code;
 }
+
+
+
+/* EFFEKTE */
+
+

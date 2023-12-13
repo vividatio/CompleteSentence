@@ -16,7 +16,8 @@
 #define LED_WIDTH     17
 #define LED_HEIGHT    9
 
-
+/* Mapping aktiv? */
+#define MAPPING
 
 
 /* Error Codes */
