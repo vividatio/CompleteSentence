@@ -26,12 +26,25 @@ int CWIFI::init(const char * ssid, const char * passwd) {
     }
 
     // Lokale IP-Adresse im Seriellen Monitor ausgeben und Server starten
+    this->print();
+    return ERR_NO_ERROR;
+}
+
+int CWIFI::print(){
+    m_erroro_code = ERR_NO_ERROR;
+
     Serial.println("");
     Serial.println("WiFi connected");
-    Serial.println("IP address: ");
+    Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+    Serial.print("SSID      : ");
+    Serial.println(WiFi.SSID());
+    Serial.print("Channel   : ");
+    Serial.println(WiFi.channel());
+    Serial.print("RSSI      : ");
+    Serial.println(WiFi.RSSI());
 
-    return ERR_NO_ERROR;
+    return m_erroro_code;
 }
 
 

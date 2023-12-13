@@ -2,15 +2,20 @@
 #define DECLARATIONS_HPP
 
 /* LED zeug */
-#define LED_PIN     5
+#define LED_PIN     3 /*RX */
 #define NUM_LEDS    153 /* 17*9 */
-#define BRIGHTNESS  64
+#define BRIGHTNESS  80
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
+//#define COLOR_ORDER RGB
+#define SECONDS_LED 152 /* Sekunden Indikator -> Sign of life*/
+//#define SECONDS_LED 0 /* Sekunden Indikator -> Sign of life*/
+
 
 /* graphical stuff */ 
 #define LED_WIDTH     17
 #define LED_HEIGHT    9
+
 
 
 
@@ -40,11 +45,9 @@ typedef struct time {
   }
 } timeT, *timeP;
 
-
-
-
 /* Konstanten */
-const unsigned long cRefreshTimeInterval = 5 /*Sek*/ * 1000 /*ms*/;
-const unsigned long cRefreshLEDinterval =  /*0 Sek*/ 200 /*ms    Update mit 10 Hz*/;
+constexpr unsigned long cRefreshTimeInterval = 10 /*Sek*/ * 1000 /*ms*/;
+constexpr unsigned long cRefreshLEDArrayinterval =  0/* Sek*/ + 500 /*ms*/;
+constexpr unsigned long cRefreshLEDinterval =  0 /* Sek*/ + 500 /*ms*/;
 
 #endif

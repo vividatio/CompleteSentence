@@ -15,12 +15,15 @@ CLEDControl::~CLEDControl(){
 int CLEDControl::init() {
   m_error_code = ERR_NO_ERROR;
 
+  //FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.setBrightness( BRIGHTNESS );
 
+  FastLED.setMaxPowerInMilliWatts(2000);
+
   m_onColor.r = 64;
-  m_onColor.g = 64;
-  m_onColor.b = 64;
+  m_onColor.g = 44;
+  m_onColor.b = 14;
 
   clear();
 
@@ -31,6 +34,7 @@ int CLEDControl::init() {
 int CLEDControl::show() {
 
   FastLED.show();
+  FastLED.show(); // found in some forums
 
   return ERR_NO_ERROR;
 }
@@ -40,37 +44,72 @@ int CLEDControl::show() {
 
 int CLEDControl::map_array_to_screen(bool zz_on, bool invert_color) {
 
-  // int addr = 0;
-  // int row = 0;
-  // int col = 0;
-  // int offset = 0;
-  // int count = 0;
+  int addr = 0;
+  int row = 0;
+  int col = 0;
+  int offset = 0;
+  int count = 0;
 
-  // do{
-  //   /* jede aeite zeile wird rueckwaerts gezaehlt wenn zigzag aktiv ist */
-  //   if ( ((count % 2) == 1) && (zz_on) ) {
-  //     offset = LED_WIDTH - col -1; 
-  //   } else {
-  //     offset = col;
-  //   }
+  do{
+    /* jede aeite zeile wird rueckwaerts gezaehlt wenn zigzag aktiv ist */
+    if ( ((row % 2) == 1) && (zz_on) ) {
+      offset = LED_WIDTH - col -1; 
+    } else {
+      offset = col;
+    }
 
-  //   addr = offset + (row * LED_WIDTH);
-  //   if(invert_color) {
-  //     leds[count] = -framebuffer[addr];
-  //   } else {
-  //     leds[count] = framebuffer[addr];
-  //   }
+    addr = offset + (row * LED_WIDTH);
+    if(invert_color) {
+      leds[count] = -framebuffer[addr];
+    } else {
+      leds[count] = framebuffer[addr];
+    }
     
-  //   col++;
-  //   if (col == LED_WIDTH) {
-  //     col = 0;
-  //     row++;
-  //   }
-  //   count ++;
-  // } while (count < NUM_LEDS);
+    col++;
+    if (col == LED_WIDTH) {
+      col = 0;
+      row++;
+    }
+    count ++;
+  } while (count < NUM_LEDS);
 
   return 0;
 }
+
+int CLEDControl::generate_mapping_table(bool zz_on) {
+  m_error_code = ERR_NO_ERROR;
+
+  int addr = 0;
+  int row = 0;
+  int col = 0;
+  int offset = 0;
+  int count = 0;
+
+  do{
+    /* jede aeite zeile wird rueckwaerts gezaehlt wenn zigzag aktiv ist */
+    if ( ((row % 2) == 1) && (zz_on) ) {
+      offset = LED_WIDTH - col -1; 
+    } else {
+      offset = col;
+    }
+
+    addr = offset + (row * LED_WIDTH);
+    m_mappingTable[count] = addr;
+
+//    Serial.println(addr); 
+
+    col++;
+    if (col == LED_WIDTH) {
+      col = 0;
+      row++;
+    }
+    count ++;
+  } while (count < NUM_LEDS);
+
+
+  return m_error_code;
+}
+
 
 
 int CLEDControl::clear() {
@@ -80,37 +119,25 @@ int CLEDControl::clear() {
     leds[i].r = 0;
     leds[i].g = 0;
     leds[i].b = 0;
+    framebuffer[i].r = 0;
+    framebuffer[i].g = 0;
+    framebuffer[i].b = 0;
+
   }
 
   return m_error_code;
 }
 
 
-int CLEDControl::fill_LED_Buffer(uint16_t counter) {
+int CLEDControl::fill_LED_Buffer() {
+  m_error_code = ERR_NO_ERROR;
+  int u = 0;
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    if (i == counter) {
-      leds[i].r = 64;
-      leds[i].g = 64;
-      leds[i].b = 64;
-     
-    } else {
-      leds[i].r = 0;
-      leds[i].g = 0;
-      leds[i].b = 0;
-    }
-      // if (leds[i].r > 0) {
-      //   leds[i].r -= 1;
-      // } else leds[i].r = 0;
-      // if (leds[i].g > 0) {
-      //   leds[i].g -= 1;
-      // } else leds[i].g = 0;
-      // if (leds[i].b > 0) {
-      //   leds[i].b -= 1;
-      // } else leds[i].b = 0;
-   // }
+    u = m_mappingTable[i];
+
+    leds[i] = framebuffer[u];
   }
-  Serial.printf("Pixel: %d\n", counter);
-  return 0;
+  return m_error_code;
 }
 
 int CLEDControl::set_LEDs_range(uint16_t pos, uint16_t width) {
@@ -118,6 +145,16 @@ int CLEDControl::set_LEDs_range(uint16_t pos, uint16_t width) {
   
   for (uint16_t i = 0; i < width; i++) {
     //Framebuffer verwenden
+    framebuffer[pos + i] = m_onColor;
+  }
+
+  return m_error_code;
+}
+
+int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width) {
+  m_error_code = ERR_NO_ERROR;
+  
+  for (uint16_t i = 0; i < width; i++) {
     leds[pos + i] = m_onColor;
   }
 
@@ -280,23 +317,44 @@ int CLEDControl::decodeTime(timeP actualTimePointer) {
   return m_error_code;
 }
 
-char LEDS_SimArray[153] = "EsOistEhalbpunktQLdreiviertelBzehnfünfCnachvorIhalbzehnfünfneunsechsFzwölfelfzweivierJsiebenVdreiachtHGeinsXvormittagsZAQUnachmittagsMNW.........";
-
+char LEDS_SimArray[153] = "EsOistEhalbpunktQLdreiviertelBzehnfunfCnachvorIhalbzehnfunfneunsechsFzwolfelfzweivierJsiebenVdreiachtHGeinsXvormittagsZAQUnachmittagsMNW.........";
 int CLEDControl::PrintSimulation() {
   m_error_code = ERR_NO_ERROR;
   
+  Serial.println(LEDS_SimArray);
+
+  // for (uint16_t i = 0; i < NUM_LEDS; i++) {
+  //   Serial.print(LEDS_SimArray[i]);
+  // }
+  // Serial.printf("\n");
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    Serial.print(LEDS_SimArray[i]);
-  }
-  Serial.printf("\n");
-  for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    if (leds[i].r > 0) {
+    if (framebuffer[i].r > 0) {
       Serial.print(LEDS_SimArray[i]);
     } else {
       Serial.print(" ");
     }
   }
   Serial.printf("\n");
+
+  
+
+
+  return m_error_code;
+}
+
+int CLEDControl::toggleSecondsLED() {
+  m_error_code = ERR_NO_ERROR;
+
+  m_SecondsLED =!m_SecondsLED;
+
+ if (m_SecondsLED) {
+    leds[SECONDS_LED] = 0;
+    Serial.println("aus");
+  } else {
+    leds[SECONDS_LED] = m_onColor;
+    Serial.println("an");
+  }
+  
 
   return m_error_code;
 }

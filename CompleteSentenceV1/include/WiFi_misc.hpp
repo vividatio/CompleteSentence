@@ -21,6 +21,8 @@ public:
     CWIFI(const char * ssid, const char * passwd);
 
     int init(const char * ssid, const char * passwd);
+
+    int print();
 };
 
 

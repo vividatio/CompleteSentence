@@ -55,7 +55,7 @@ nur die Worte:
 #define WORD_NEUN           (59, 4)
 #define WORD_ZEHN_2         (51, 4)
 #define WORD_ELF            (74, 3)
-#define WORD_VORMITTAGS     (100, 10)
+#define WORD_VORMITTAGS     (108, 10)
 #define WORD_ZWOELF         (69, 5)
 #define WORD_NACHMITTATGS   (122, 11)
 // die Punkte sind ab LED 8*17 + 1 = 137
