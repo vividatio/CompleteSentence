@@ -50,6 +50,7 @@ CNTPtimer   NTP;
 /* Globale Check-Variablen fuer den init-State */
 bool g_precalcMapping = false;
 bool g_firstTimeSetup = false;
+bool displayTestFinished = false;
 
 
 /* idle state function */
@@ -102,20 +103,11 @@ inline int fnc_init() {
 
   activeState = st_init;
 
-  /* Display-Test */
-  for (int i = 0; i < NUM_LEDS; i++) {
-    LED.clear();
-    LED.set_LEDs_range(i, 1);
-    LED.show();
-    delay(250);
-  }
-
-
   return ERR_NO_ERROR;
 }
 
 
-#define _DEBUG
+unsigned char oldMinutes = 61;
 
 /* loop state function */
 inline int fnc_loop() {
@@ -144,9 +136,9 @@ inline int fnc_loop() {
     Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
     /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
 
-    #ifdef DEBUG
+#ifdef DEBUG
     Serial.printf("%ld\n", actualMillis - prevLEDMillis);
-    #endif
+#endif
   }
 
 
@@ -158,27 +150,33 @@ inline int fnc_loop() {
     actualTime.Minutes = NTP.minutes();
     actualTime.Seconds = NTP.seconds();
 
-    /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */
-    LED.decodeTime(&actualTime);
-  //  LED.PrintSimulation();
+    
+    /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */    
+    /* Die Anzeige aendert sich */
+    if (actualTime.Minutes != oldMinutes) {
+      oldMinutes = actualTime.Minutes;
 
-    /* ----------------------------------------- LEDArray fuellen ------------------------------------------ */
-#ifdef MAPPING
-    LED.fill_LED_Buffer();
+      LED.decodeTime(&actualTime);
+
+#ifdef DEBUG
+      LED.PrintSimulation();
 #endif
+/* ----------------------------------------- LEDArray fuellen ------------------------------------------ */
+#ifdef MAPPING
+      LED.fill_LED_Buffer();
+#endif
+    }
+
+
+    /* Sekunden-Indikator aktualisieren */
     LED.toggleSecondsLED();
-   
-    #ifdef DEBUG
-    Serial.printf("LED's update complete");
-    #endif
-   
   }
 
 
   /* LED Refresh */
   if ((actualMillis - prevLEDMillis) >= cRefreshLEDArrayinterval ) {
     prevLEDMillis = actualMillis;
-/* ----------------------------------------- LEDs ansteuern ------------------------------------------ */
+    /* ----------------------------------------- LEDs ansteuern ------------------------------------------ */
 
     LED.show();
   }
@@ -201,24 +199,20 @@ void setup() {
   Serial.begin(115200);
 
 
-/* WIFI init */
+  /* WIFI init */
   wifi.init("i come from a LAN down under", "56710588139461966274");
 
   /* init FastLed */
   LED.init();
 
-/* NTP_timer init */
+  /* NTP_timer init */
   NTP.init();
   
-/* Initialisierungen */
+  /* Initialisierungen */
 
-fnc_idle();
+  fnc_idle();
 
-fnc_init();
-
-
-
-
+  fnc_init();
 
 }
 
@@ -226,43 +220,25 @@ fnc_init();
 /* ****************************************************************************************************************** */
 /* *************************************************** globaler Loop ************************************************ */
 /* ****************************************************************************************************************** */
-/* Stat driven */
-
 void loop() {
 
-  // switch (activeState) {
+  /* Displaytest */
+  if (!displayTestFinished) {
+    LED.clear();
+    for (int i = 0; i < NUM_LEDS; i++) {
+      LED.set_LEDs_range_direct(i , 1, CRGB::Beige);
+      LED.show();
+      delay(50);
+    }
+    displayTestFinished = true;
+    delay(1000);
 
-  //   case st_idle:
-  //     fnc_idle();
-  //     break;
-  //   case st_init:
-  //     fnc_init();
-  //     break;
-  //   case st_loop:
-  //     fnc_loop();
-  //     break;
-  //   default:
-  //     break;
-  // }
+  } else {
+/* Normaler Loop*/
+    fnc_loop();
 
-  fnc_loop();
+    delay(5); // damit das Ding nicht durchdreht
+  }
 
-  delay(5);
-
-// /* LEDs aktualisieren */
-//   // put your main code here, to run repeatedly:
-//     cnt ++;
-
-//     LED.fill_LED_Buffer(cnt);
-//     LED.show();
-
-//     delay(50);
-
-// /* Uhrzeit abfragen */
-//   if ((cnt % 200) == 0) {  // alle 10 Sekunden Zeit lesen
-//     NTP.update_via_NTP();
-//     Serial.println(NTP.getTimeString());
-
-//   }
 
 }

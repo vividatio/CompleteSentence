@@ -17,7 +17,9 @@
 #define LED_HEIGHT    9
 
 /* Mapping aktiv? */
+#define _DEBUG
 #define MAPPING
+
 
 
 /* Error Codes */
@@ -47,8 +49,8 @@ typedef struct time {
 } timeT, *timeP;
 
 /* Konstanten */
-constexpr unsigned long cRefreshTimeInterval = 10 /*Sek*/ * 1000 /*ms*/;
-constexpr unsigned long cRefreshLEDArrayinterval =  0/* Sek*/ + 500 /*ms*/;
+constexpr unsigned long cRefreshTimeInterval = 50 /*Sek*/ * 1000 /*ms*/;
+constexpr unsigned long cRefreshLEDArrayinterval =  1/* Sek*/ * 1000 /*ms*/;
 constexpr unsigned long cRefreshLEDinterval =  0 /* Sek*/ + 500 /*ms*/;
 
 #endif

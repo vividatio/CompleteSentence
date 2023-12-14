@@ -52,7 +52,7 @@ public:
 
     int set_LEDs_range(uint16_t pos, uint16_t width);
     int set_LEDs_range_direct(uint16_t pos, uint16_t width);
-
+    int set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color);
     int setHour(unsigned char hour);
     
     int decodeTime(timeP actualTimePointer);

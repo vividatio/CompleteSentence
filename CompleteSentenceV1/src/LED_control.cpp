@@ -21,12 +21,12 @@ int CLEDControl::init() {
 
   FastLED.setMaxPowerInMilliWatts(2000);
 
-  m_onColor.r = 64;
-  m_onColor.g = 44;
-  m_onColor.b = 14;
+  // m_onColor.r = 64;
+  // m_onColor.g = 44;
+  // m_onColor.b = 14;
 
-  m_onColor = CRGB::Fuchsia;
-
+  // m_onColor = CRGB::Fuchsia;
+  m_onColor = CRGB::Orange;
 
   clear();
 
@@ -119,13 +119,8 @@ int CLEDControl::clear() {
   m_error_code = ERR_NO_ERROR;
   
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    leds[i].r = 0;
-    leds[i].g = 0;
-    leds[i].b = 0;
-    framebuffer[i].r = 0;
-    framebuffer[i].g = 0;
-    framebuffer[i].b = 0;
-
+    leds[i] = CRGB::Black;
+    framebuffer[i] = CRGB::Black;
   }
 
   return m_error_code;
@@ -164,6 +159,16 @@ int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width) {
   
   for (uint16_t i = 0; i < width; i++) {
     leds[pos + i] = m_onColor;
+  }
+
+  return m_error_code;
+}
+
+int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color) {
+  m_error_code = ERR_NO_ERROR;
+  
+  for (uint16_t i = 0; i < width; i++) {
+    leds[pos + i] = color;
   }
 
   return m_error_code;
