@@ -41,25 +41,23 @@ public:
 
     /* wenn die LEDs im Streifen im ZigZag verlaufen startet jede Zeile mit der LED die der letzten der vorherigen am 
     nahesten ist. Dann addressieren sich jede zweite Zeil umgekehrt zur vorherigen das erledigt dann diese Funktion */
-    int map_array_to_screen(bool zz_on, bool invert_color);
-
     int generate_mapping_table(bool zz_on);
 
     int clear();
 
-    /* fuellt den led-Buffer */
+    /* fuellt den led-Buffer vom framebuffer ins FastLED Array und benutzt dabei die MappingTabelle*/
     int fill_LED_Buffer();
 
     int set_LEDs_range(uint16_t pos, uint16_t width);
     int set_LEDs_range_direct(uint16_t pos, uint16_t width);
     int set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color);
+
     int setHour(unsigned char hour);
-    
     int decodeTime(timeP actualTimePointer);
-    
+    int toggleSecondsLED();
+
     int PrintSimulation();
 
-    int toggleSecondsLED();
 
 };
 

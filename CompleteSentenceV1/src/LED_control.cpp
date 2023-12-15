@@ -19,13 +19,14 @@ int CLEDControl::init() {
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.setBrightness( BRIGHTNESS );
 
-  FastLED.setMaxPowerInMilliWatts(2000);
+  FastLED.setMaxPowerInMilliWatts(MAXIMAL_MILLIAMPERE);
 
   // m_onColor.r = 64;
   // m_onColor.g = 44;
   // m_onColor.b = 14;
 
   // m_onColor = CRGB::Fuchsia;
+
   m_onColor = CRGB::Orange;
 
   clear();
@@ -37,46 +38,9 @@ int CLEDControl::init() {
 int CLEDControl::show() {
 
   FastLED.show();
-  FastLED.show(); // found in some forums
+  FastLED.show(); // found in some forums - show without glitches
 
   return ERR_NO_ERROR;
-}
-
-
-
-
-int CLEDControl::map_array_to_screen(bool zz_on, bool invert_color) {
-
-  int addr = 0;
-  int row = 0;
-  int col = 0;
-  int offset = 0;
-  int count = 0;
-
-  do{
-    /* jede aeite zeile wird rueckwaerts gezaehlt wenn zigzag aktiv ist */
-    if ( ((row % 2) == 1) && (zz_on) ) {
-      offset = LED_WIDTH - col -1; 
-    } else {
-      offset = col;
-    }
-
-    addr = offset + (row * LED_WIDTH);
-    if(invert_color) {
-      leds[count] = -framebuffer[addr];
-    } else {
-      leds[count] = framebuffer[addr];
-    }
-    
-    col++;
-    if (col == LED_WIDTH) {
-      col = 0;
-      row++;
-    }
-    count ++;
-  } while (count < NUM_LEDS);
-
-  return 0;
 }
 
 int CLEDControl::generate_mapping_table(bool zz_on) {
@@ -131,13 +95,7 @@ int CLEDControl::fill_LED_Buffer() {
   m_error_code = ERR_NO_ERROR;
   int u = 0;
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-
-#ifdef MAPPING    
     u = m_mappingTable[i];
-#else
-    u = i;
-#endif
-
     leds[i] = framebuffer[u];
   }
   return m_error_code;

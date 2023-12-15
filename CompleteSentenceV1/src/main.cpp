@@ -162,9 +162,7 @@ inline int fnc_loop() {
       LED.PrintSimulation();
 #endif
 /* ----------------------------------------- LEDArray fuellen ------------------------------------------ */
-#ifdef MAPPING
       LED.fill_LED_Buffer();
-#endif
     }
 
 

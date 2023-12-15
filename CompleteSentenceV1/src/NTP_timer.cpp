@@ -55,7 +55,12 @@ unsigned char CNTPtimer::hour12(bool *pm) {
   
   unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
   
-  *pm = (12 < NTPHours); 
+/* Info: 
+       0:00 bis 11:59 -> am 
+      12:00 bis 23:59 -> pm
+*/
+
+  *pm = (12 <= NTPHours); 
   unsigned char result = *pm ? (NTPHours - 12) : NTPHours;
 
   if (result == 0) result = 12; // meine Uhr kann keine NULL 0 Uhr ist dann 12 pm
