@@ -23,9 +23,6 @@
 /* ************************************************** globale Variablen ********************************************* */
 /* ****************************************************************************************************************** */
 
-// static int cnt = 0;
-
-StateT          activeState = st_idle;
 unsigned long   prevTimeMillis = 0;
 unsigned long   prevLEDArrayMillis = 0;
 unsigned long   prevLEDMillis = 0;
@@ -48,8 +45,6 @@ CNTPtimer   NTP;
 
 
 /* Globale Check-Variablen fuer den init-State */
-bool g_precalcMapping = false;
-bool g_firstTimeSetup = false;
 bool displayTestFinished = false;
 
 
@@ -57,14 +52,6 @@ bool displayTestFinished = false;
 int fnc_idle() {
   //Serial.println("entry idle state");
   
-  // init-state-check-variablen resetten
-  g_precalcMapping = false;
-  g_firstTimeSetup = false;
-
-
-  // next state
-  activeState = st_init;
-
   return ERR_NO_ERROR;
 }
 
@@ -75,18 +62,21 @@ int fnc_idle() {
 
 /* init state function */
 inline int fnc_init() {
-  //Serial.println("entry init state");
+  Serial.println("Doing precalculations... ");
+  LED.generate_mapping_table(true);
 
-  if (!g_precalcMapping) {
-    Serial.println("Doing precalculations... ");
-    LED.generate_mapping_table(true);
-    g_precalcMapping = true;
+  NTP.update_via_NTP();
+  bool CheckNTP = NTP.check();
+  if (CheckNTP) {
+    Serial.println("Time server connected ... ");
+  } else {
+    Serial.println("ERROR: Time server NOT connected ... ");
   }
-
-  if (!g_firstTimeSetup) {
-    NTP.update_via_NTP();
-    g_firstTimeSetup = NTP.check();
-  }
+  
+  /* interne Uhrzeit-Variablen initialisieren */
+  actualTime.Hours = NTP.hour12(&actualTime.pm);
+  actualTime.Minutes = NTP.minutes();
+  actualTime.Seconds = NTP.seconds();
 
   // update timers
   actualMillis = millis();
@@ -94,17 +84,21 @@ inline int fnc_init() {
   prevLEDArrayMillis = actualMillis;
   prevLEDMillis = actualMillis;
 
-/* State erfuellt?*/
-  if (g_precalcMapping && g_firstTimeSetup) {
-    activeState = st_loop;
-    Serial.println("Init state finished. Switching to loop");
-    return ERR_NO_ERROR;
-  }
-
-  activeState = st_init;
-
   return ERR_NO_ERROR;
 }
+
+inline int fnc_Displaytest() {
+  LED.clear();
+  for (int i = 0; i < NUM_LEDS; i++) {
+    LED.set_LEDs_range_direct(i , 1, CRGB::Beige);
+    LED.show();
+    delay(25);
+  }
+  return ERR_NO_ERROR;
+}
+
+
+
 
 
 unsigned char oldMinutes = 61;
@@ -114,45 +108,34 @@ inline int fnc_loop() {
 
   /* Interval neu beginnen */
   actualMillis = millis();
-  
-  #ifdef DEBUG
-  Serial.printf("%ld\n", actualMillis - prevTimeMillis);
-  #endif
 
-  /* Zeiterfassung */
+  /* ----------------------------------------- Zeit-Update ---------------------------------------------- */
   if ((actualMillis - prevTimeMillis) >= cRefreshTimeInterval ) {
     prevTimeMillis = actualMillis;
-
-    /* ----------------------------------------- Timer Kram ---------------------------------------------- */
+  
     /* Refreshtime ausloesen */
     NTP.update_via_NTP();
 
-
+#ifdef DEBUG
     actualTime.Hours = NTP.hour12(&actualTime.pm);
     actualTime.Minutes = NTP.minutes();
     actualTime.Seconds = NTP.seconds();
-    
+ 
     /* Ausgabe */
     Serial.printf("Aktuelle Uhrzeit: %02d:%02d:%02d (%s)\n", actualTime.Hours, actualTime.Minutes, actualTime.Seconds, (actualTime.pm) ? "nachmittag" :"vormittag");
-    /* Zeit updaten - Pauschal, denn NTP update macht erst ein update, wenn UpdateTime erreicht ist */
-
-#ifdef DEBUG
-    Serial.printf("%ld\n", actualMillis - prevLEDMillis);
 #endif
+    
   }
 
-
-  /* LED - Array refresh */
+  /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */    
   if ((actualMillis - prevLEDArrayMillis) >= cRefreshLEDArrayinterval ) {
     prevLEDArrayMillis = actualMillis;
 
     actualTime.Hours = NTP.hour12(&actualTime.pm);
     actualTime.Minutes = NTP.minutes();
     actualTime.Seconds = NTP.seconds();
-
     
-    /* --------------------------------------- Uhrzeit auswerten ----------------------------------------- */    
-    /* Die Anzeige aendert sich */
+    /* Die Anzeige aendert sich weil sich die Minuten geaendert haben */
     if (actualTime.Minutes != oldMinutes) {
       oldMinutes = actualTime.Minutes;
 
@@ -161,26 +144,20 @@ inline int fnc_loop() {
 #ifdef DEBUG
       LED.PrintSimulation();
 #endif
-/* ----------------------------------------- LEDArray fuellen ------------------------------------------ */
+      /* LEDArray fuellen mit der MappingTable */
       LED.fill_LED_Buffer();
     }
-
-
     /* Sekunden-Indikator aktualisieren */
     LED.toggleSecondsLED();
   }
 
 
-  /* LED Refresh */
+  /* ----------------------------------------- LEDs refresh ------------------------------------------ */
   if ((actualMillis - prevLEDMillis) >= cRefreshLEDArrayinterval ) {
     prevLEDMillis = actualMillis;
-    /* ----------------------------------------- LEDs ansteuern ------------------------------------------ */
-
+  
     LED.show();
   }
-
-
-  activeState = st_loop;
 
   return ERR_NO_ERROR;
 }
@@ -219,24 +196,20 @@ void setup() {
 /* *************************************************** globaler Loop ************************************************ */
 /* ****************************************************************************************************************** */
 void loop() {
-
-  /* Displaytest */
-  if (!displayTestFinished) {
-    LED.clear();
-    for (int i = 0; i < NUM_LEDS; i++) {
-      LED.set_LEDs_range_direct(i , 1, CRGB::Beige);
-      LED.show();
-      delay(50);
-    }
-    displayTestFinished = true;
-    delay(1000);
-
-  } else {
-/* Normaler Loop*/
+  
+  if (displayTestFinished) {
+    /* Normaler Loop*/
     fnc_loop();
 
-    delay(5); // damit das Ding nicht durchdreht
-  }
 
 
+
+  } else {
+    /* Displaytest - hier, weil das delaz im Setup nicht funktioniert */    
+    fnc_Displaytest();
+    displayTestFinished = true;
+    delay(2000);
+  } 
+
+  delay(5); // damit das Ding nicht durchdreht
 }
