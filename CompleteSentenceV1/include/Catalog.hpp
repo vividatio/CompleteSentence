@@ -63,7 +63,7 @@ rechts nach links) */
 
 #
 #define WORD_SIEBEN      (86, 6)
-#define WORD_DREI        (90, 4)
+#define WORD_DREI        (93, 4)
 #define WORD_ACHT        (97, 4)
 
 
