@@ -4,12 +4,13 @@
 /* LED zeug */
 #define LED_PIN     3 /*RX */
 #define NUM_LEDS    153 /* 17*9 */
-#define BRIGHTNESS  80
+constexpr unsigned char BRIGHTNESS = 50;
+constexpr unsigned int MAXIMAL_MILLIAMPERE = 2000;
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 //#define COLOR_ORDER RGB
 #define SECONDS_LED 152 /* Sekunden Indikator -> Sign of life*/
-//#define SECONDS_LED 0 /* Sekunden Indikator -> Sign of life*/
+//#define SECONDS_LED 2 /* Sekunden Indikator -> Sign of life*/
 
 
 /* graphical stuff */ 
@@ -17,8 +18,7 @@
 #define LED_HEIGHT    9
 
 /* Mapping aktiv? */
-#define MAPPING
-
+#define _DEBUG
 
 /* Error Codes */
 #define ERR_NO_ERROR    0
@@ -47,8 +47,8 @@ typedef struct time {
 } timeT, *timeP;
 
 /* Konstanten */
-constexpr unsigned long cRefreshTimeInterval = 10 /*Sek*/ * 1000 /*ms*/;
-constexpr unsigned long cRefreshLEDArrayinterval =  0/* Sek*/ + 500 /*ms*/;
+constexpr unsigned long cRefreshTimeInterval = 50 /*Sek*/ * 1000 /*ms*/;
+constexpr unsigned long cRefreshLEDArrayinterval =  1/* Sek*/ * 1000 /*ms*/;
 constexpr unsigned long cRefreshLEDinterval =  0 /* Sek*/ + 500 /*ms*/;
 
 #endif

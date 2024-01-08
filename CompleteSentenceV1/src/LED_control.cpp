@@ -19,14 +19,15 @@ int CLEDControl::init() {
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.setBrightness( BRIGHTNESS );
 
-  FastLED.setMaxPowerInMilliWatts(2000);
+  FastLED.setMaxPowerInMilliWatts(MAXIMAL_MILLIAMPERE);
 
-  m_onColor.r = 64;
-  m_onColor.g = 44;
-  m_onColor.b = 14;
+  // m_onColor.r = 64;
+  // m_onColor.g = 44;
+  // m_onColor.b = 14;
 
-  m_onColor = CRGB::Fuchsia;
+  // m_onColor = CRGB::Fuchsia;
 
+  m_onColor = CRGB::Orange;
 
   clear();
 
@@ -37,46 +38,9 @@ int CLEDControl::init() {
 int CLEDControl::show() {
 
   FastLED.show();
-  FastLED.show(); // found in some forums
+  FastLED.show(); // found in some forums - show without glitches
 
   return ERR_NO_ERROR;
-}
-
-
-
-
-int CLEDControl::map_array_to_screen(bool zz_on, bool invert_color) {
-
-  int addr = 0;
-  int row = 0;
-  int col = 0;
-  int offset = 0;
-  int count = 0;
-
-  do{
-    /* jede aeite zeile wird rueckwaerts gezaehlt wenn zigzag aktiv ist */
-    if ( ((row % 2) == 1) && (zz_on) ) {
-      offset = LED_WIDTH - col -1; 
-    } else {
-      offset = col;
-    }
-
-    addr = offset + (row * LED_WIDTH);
-    if(invert_color) {
-      leds[count] = -framebuffer[addr];
-    } else {
-      leds[count] = framebuffer[addr];
-    }
-    
-    col++;
-    if (col == LED_WIDTH) {
-      col = 0;
-      row++;
-    }
-    count ++;
-  } while (count < NUM_LEDS);
-
-  return 0;
 }
 
 int CLEDControl::generate_mapping_table(bool zz_on) {
@@ -119,34 +83,48 @@ int CLEDControl::clear() {
   m_error_code = ERR_NO_ERROR;
   
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-    leds[i].r = 0;
-    leds[i].g = 0;
-    leds[i].b = 0;
-    framebuffer[i].r = 0;
-    framebuffer[i].g = 0;
-    framebuffer[i].b = 0;
-
+    leds[i] = CRGB::Black;
+    framebuffer[i] = CRGB::Black;
   }
 
   return m_error_code;
 }
 
+int CLEDControl::set_onColor(int red, int green, int blue){
+  /* fuer meinen Code ist es wichtig, das eine on-FArbe nicht [0 0 0] ist*/
+  if (red == 0) red = 10;
+  if (green == 0) green = 10;
+  if (blue == 0) blue = 10;
+
+  m_onColor.r = red;
+  m_onColor.g = green;
+  m_onColor.b = blue;
+
+  return m_error_code;
+}
+
+int CLEDControl::fill_LED_Buffer_copy() {
+  m_error_code = ERR_NO_ERROR;
+  int u = 0;
+  for (uint16_t i = 0; i < NUM_LEDS; i++) {
+    u = m_mappingTable[i];
+    leds[i] = framebuffer[u];
+  }
+  return m_error_code;
+}
 
 int CLEDControl::fill_LED_Buffer() {
   m_error_code = ERR_NO_ERROR;
   int u = 0;
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
-
-#ifdef MAPPING    
     u = m_mappingTable[i];
-#else
-    u = i;
-#endif
-
-    leds[i] = framebuffer[u];
+    if (framebuffer[u] > 0 ) {
+      leds[i] = m_onColor;
+    }
   }
   return m_error_code;
 }
+
 
 int CLEDControl::set_LEDs_range(uint16_t pos, uint16_t width) {
   m_error_code = ERR_NO_ERROR;
@@ -164,6 +142,16 @@ int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width) {
   
   for (uint16_t i = 0; i < width; i++) {
     leds[pos + i] = m_onColor;
+  }
+
+  return m_error_code;
+}
+
+int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color) {
+  m_error_code = ERR_NO_ERROR;
+  
+  for (uint16_t i = 0; i < width; i++) {
+    leds[pos + i] = color;
   }
 
   return m_error_code;

@@ -29,6 +29,23 @@ int CNTPtimer::init() {
 }
 
 
+
+int CNTPtimer::restart() {
+    m_error_code = ERR_NO_ERROR;
+
+    // erst alles schliessen
+    if (m_timeNTPClient != NULL) {
+      delete m_timeNTPClient;
+    }
+    // neu erstellen
+    init();
+
+    return m_error_code;
+}
+
+
+
+
 bool CNTPtimer::check() {
   
 return m_timeNTPClient->isTimeSet();
@@ -37,6 +54,13 @@ return m_timeNTPClient->isTimeSet();
 
 int CNTPtimer::update_via_NTP() {
     m_error_code = ERR_NO_ERROR;
+
+  if (false == check()) {
+    restart();
+  }
+
+
+
 
     m_timeNTPClient->update(); // das wird intern nur danch dem Timeinterval Ausgefuehrt (constructor)
     
@@ -55,7 +79,12 @@ unsigned char CNTPtimer::hour12(bool *pm) {
   
   unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
   
-  *pm = (12 < NTPHours); 
+/* Info: 
+       0:00 bis 11:59 -> am 
+      12:00 bis 23:59 -> pm
+*/
+
+  *pm = (12 <= NTPHours); 
   unsigned char result = *pm ? (NTPHours - 12) : NTPHours;
 
   if (result == 0) result = 12; // meine Uhr kann keine NULL 0 Uhr ist dann 12 pm
