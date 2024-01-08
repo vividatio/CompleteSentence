@@ -26,6 +26,8 @@ public:
 
     int init();
 
+    int restart();
+
     int update_via_NTP();
 
     bool check();

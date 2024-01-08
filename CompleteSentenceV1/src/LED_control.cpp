@@ -90,8 +90,20 @@ int CLEDControl::clear() {
   return m_error_code;
 }
 
+int CLEDControl::set_onColor(int red, int green, int blue){
+  /* fuer meinen Code ist es wichtig, das eine on-FArbe nicht [0 0 0] ist*/
+  if (red == 0) red = 10;
+  if (green == 0) green = 10;
+  if (blue == 0) blue = 10;
 
-int CLEDControl::fill_LED_Buffer() {
+  m_onColor.r = red;
+  m_onColor.g = green;
+  m_onColor.b = blue;
+
+  return m_error_code;
+}
+
+int CLEDControl::fill_LED_Buffer_copy() {
   m_error_code = ERR_NO_ERROR;
   int u = 0;
   for (uint16_t i = 0; i < NUM_LEDS; i++) {
@@ -100,6 +112,19 @@ int CLEDControl::fill_LED_Buffer() {
   }
   return m_error_code;
 }
+
+int CLEDControl::fill_LED_Buffer() {
+  m_error_code = ERR_NO_ERROR;
+  int u = 0;
+  for (uint16_t i = 0; i < NUM_LEDS; i++) {
+    u = m_mappingTable[i];
+    if (framebuffer[u] > 0 ) {
+      leds[i] = m_onColor;
+    }
+  }
+  return m_error_code;
+}
+
 
 int CLEDControl::set_LEDs_range(uint16_t pos, uint16_t width) {
   m_error_code = ERR_NO_ERROR;

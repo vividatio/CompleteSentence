@@ -65,6 +65,8 @@ inline int fnc_init() {
   Serial.println("Doing precalculations... ");
   LED.generate_mapping_table(true);
 
+  NTP.init();
+
   NTP.update_via_NTP();
   bool CheckNTP = NTP.check();
   if (CheckNTP) {
@@ -96,10 +98,6 @@ inline int fnc_Displaytest() {
   }
   return ERR_NO_ERROR;
 }
-
-
-
-
 
 unsigned char oldMinutes = 61;
 
@@ -144,11 +142,18 @@ inline int fnc_loop() {
 #ifdef DEBUG
       LED.PrintSimulation();
 #endif
-      /* LEDArray fuellen mit der MappingTable */
-      LED.fill_LED_Buffer();
     }
+
+
+    /* TEST: Farbe aus dem Webinterface hoeln */
+    LED.set_onColor( wifi.get_SliederRed(), wifi.get_SliederGreen(), wifi.get_SliederBlue() );
+
+    /* LEDArray fuellen mit der MappingTable */
+    LED.fill_LED_Buffer();
+
     /* Sekunden-Indikator aktualisieren */
-    LED.toggleSecondsLED();
+    LED.toggleSecondsLED(); 
+   
   }
 
 

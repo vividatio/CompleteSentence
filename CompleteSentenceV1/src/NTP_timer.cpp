@@ -29,6 +29,23 @@ int CNTPtimer::init() {
 }
 
 
+
+int CNTPtimer::restart() {
+    m_error_code = ERR_NO_ERROR;
+
+    // erst alles schliessen
+    if (m_timeNTPClient != NULL) {
+      delete m_timeNTPClient;
+    }
+    // neu erstellen
+    init();
+
+    return m_error_code;
+}
+
+
+
+
 bool CNTPtimer::check() {
   
 return m_timeNTPClient->isTimeSet();
@@ -37,6 +54,13 @@ return m_timeNTPClient->isTimeSet();
 
 int CNTPtimer::update_via_NTP() {
     m_error_code = ERR_NO_ERROR;
+
+  if (false == check()) {
+    restart();
+  }
+
+
+
 
     m_timeNTPClient->update(); // das wird intern nur danch dem Timeinterval Ausgefuehrt (constructor)
     

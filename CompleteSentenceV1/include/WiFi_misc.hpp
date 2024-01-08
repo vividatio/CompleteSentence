@@ -6,6 +6,10 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
+/* fuer den Webserver */
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
 // const char *ssid     = "i come from a LAN down under";
 // const char *password = "56710588139461966274";
 
@@ -13,6 +17,10 @@ class CWIFI {
 private:
     int             m_erroro_code;
 
+    AsyncWebServer* WebServerP;
+
+    /* Parameter from Web-Server */
+    
 public:
 
     CWIFI();
@@ -22,23 +30,13 @@ public:
 
     int init(const char * ssid, const char * passwd);
 
+    int get_SliederRed();
+    
+    int get_SliederGreen();
+
+    int get_SliederBlue();
+
     int print();
 };
-
-
-
-
-// namespace WiFi_WebServer {
-
-//     //WiFiServer  WebServer;
-//     String      Header;
-//     WiFiClient  WebClient;
-
-
-//     int init();
-
-//     int WebServerLoop();
-
-// }
 
 #endif

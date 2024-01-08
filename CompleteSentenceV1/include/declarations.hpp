@@ -10,7 +10,7 @@ constexpr unsigned int MAXIMAL_MILLIAMPERE = 2000;
 #define COLOR_ORDER GRB
 //#define COLOR_ORDER RGB
 #define SECONDS_LED 152 /* Sekunden Indikator -> Sign of life*/
-//#define SECONDS_LED 0 /* Sekunden Indikator -> Sign of life*/
+//#define SECONDS_LED 2 /* Sekunden Indikator -> Sign of life*/
 
 
 /* graphical stuff */ 
