@@ -49,7 +49,6 @@ rechts nach links) */
 #define WORD_VOR            (43, 3)
 #define WORD_HALB           (47, 4)
 
-#
 #define WORD_ZEHN_2      (51, 4)
 #define WORD_FUENF_2     (55, 4)
 #define WORD_NEUN        (59, 4)
@@ -61,7 +60,6 @@ rechts nach links) */
 #define WORD_ZWEI           (77, 4)
 #define WORD_VIER           (81, 4)
 
-#
 #define WORD_SIEBEN      (86, 6)
 #define WORD_DREI        (93, 4)
 #define WORD_ACHT        (97, 4)
