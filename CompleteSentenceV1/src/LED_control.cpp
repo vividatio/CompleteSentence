@@ -275,7 +275,7 @@ int CLEDControl::decodeTime(timeP actualTimePointer) {
   }
 
   if ((l_m >= 30) && (l_m < 35)) {
-    set_LEDs_range WORD_HALB_STUNDE;
+    set_LEDs_range WORD_HALB;
     setHour((l_h + 1) % 12); // nachste Stunden 
   }
 

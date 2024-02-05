@@ -180,7 +180,10 @@ void setup() {
 
 
   /* WIFI init */
-  wifi.init("i come from a LAN down under", "56710588139461966274");
+  wifi.init("i come from a LAN down under", "12345678987654321");
+  //wifi.init("i come from a LAN down under", "56710588139461966274");
+
+
 
   /* init FastLed */
   LED.init();

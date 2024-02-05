@@ -10,9 +10,6 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-// const char *ssid     = "i come from a LAN down under";
-// const char *password = "56710588139461966274";
-
 class CWIFI {
 private:
     int             m_erroro_code;

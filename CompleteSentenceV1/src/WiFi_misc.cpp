@@ -2,6 +2,16 @@
 
 #include "html.hpp"
 
+
+
+
+
+/* AccessPoint WLAN */
+const char *AP_ssid     = "WLAN VON DER UHR";
+const char *AP_password = "08154711";
+
+
+
 String sliderValueRed = "255";
 String sliderValueGreen = "163";
 String sliderValueBlue = "1";
@@ -43,25 +53,51 @@ CWIFI::CWIFI(const char * ssid, const char * passwd) {
 }
 
 
+/*  
+    1. Voreingestellt wird ein WLAN, dass ich kenne. die Verbindung sollte funktionieren 
+    2. Sollte das Connect nach eine gewissen Zeit nicht zu stande kommen wird ein ssid und pswd vorgegeben, und damit ein AccessPoint erstellt 
+    3. Ober einen Webserver kann dann die neue WLAN Verbindung eingegeben und persitent gespeichert werden
+    4 beim restart wird das WLAN aus dem Pers Speicher geladen und ein Connect versuchet. 
+    5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
+*/
+
 int CWIFI::init(const char * ssid, const char * passwd) {
 
-    // IPAddress l_IP {192,168,68,155};
-    // IPAddress l_SNM {255,255,255,0};
-    // IPAddress l_GTW {192,168,68,1};
+    bool StartAsSoftAP = false;
 
-
-    // WiFi.config(l_IP, l_GTW, l_SNM);
-
+    /* regular StartUp */
     WiFi.begin(ssid, passwd);
 
     Serial.print("connecting WIFI");
+
+    int LoopCounter = 50; 
+
     while ( WiFi.status() != WL_CONNECTED ) {
         delay ( 500 );
+        LoopCounter--;
         Serial.print ( "." );
+        if (LoopCounter <= 0) {
+            StartAsSoftAP = true;
+            Serial.println("");
+            break;
+        }
     }
 
-    // Lokale IP-Adresse im Seriellen Monitor ausgeben und Server starten
-    this->print();
+    if (StartAsSoftAP) {
+        /* WIFI wird AccessPoint */
+        WiFi.softAPConfig(IPAddress(192,168,100,1), IPAddress(192,168,100,255), IPAddress(255,255,255,0) );
+        WiFi.softAP(AP_ssid, AP_password);
+
+        IPAddress myIP = WiFi.softAPIP();
+        String mySSID = WiFi.softAPSSID();
+        Serial.print("IP Adresse des Access Points: ");
+        Serial.println(myIP);
+    } else {
+        Serial.println("");
+        /* Wenn externes WLAN connected */
+        // Lokale IP-Adresse im Seriellen Monitor ausgeben und Server starten
+        this->print();
+    }
 
    // nun wird der WebServer initialisiert
     WebServerP = new AsyncWebServer(80);
