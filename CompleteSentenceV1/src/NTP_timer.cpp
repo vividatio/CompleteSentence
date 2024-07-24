@@ -20,7 +20,7 @@ int CNTPtimer::init() {
     m_error_code = ERR_NO_ERROR;    
     
     m_utcOffsetInSeconds = 3600;
-    m_timeNTPClient = new NTPClient(m_ntpUDP, "pool.ntp.org", m_utcOffsetInSeconds, m_TimeUpdateInterval);
+    m_timeNTPClient = new NTPClient(m_ntpUDP, "europe.pool.ntp.org", m_utcOffsetInSeconds, m_TimeUpdateInterval);
     
     /* NTP Client Setup */
     m_timeNTPClient->begin();
@@ -53,18 +53,14 @@ return m_timeNTPClient->isTimeSet();
 }
 
 int CNTPtimer::update_via_NTP() {
-    m_error_code = ERR_NO_ERROR;
+  m_error_code = ERR_NO_ERROR;
 
   if (false == check()) {
     restart();
   }
-
-
-
-
-    m_timeNTPClient->update(); // das wird intern nur danch dem Timeinterval Ausgefuehrt (constructor)
-    
-    return m_error_code;
+  m_timeNTPClient->update(); // das wird intern nur danch dem Timeinterval Ausgefuehrt (constructor)
+  
+  return m_error_code;
 }
 
 String CNTPtimer::getTimeString() {
@@ -74,11 +70,18 @@ String CNTPtimer::getTimeString() {
     return m_timeNTPClient->getFormattedTime();
 }
 
+
+
+/* 
+    gibt die Stunde von 0 bis 12 aus. 
+    Update: nun auch in Verbindung mit der Sommerzeit. 
+*/
 unsigned char CNTPtimer::hour12(bool *pm) {
   m_error_code = ERR_NO_ERROR;
   
   unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
-  
+
+
 /* Info: 
        0:00 bis 11:59 -> am 
       12:00 bis 23:59 -> pm

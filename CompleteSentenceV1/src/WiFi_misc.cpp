@@ -56,8 +56,8 @@ CWIFI::CWIFI(const char * ssid, const char * passwd) {
 /*  
     1. Voreingestellt wird ein WLAN, dass ich kenne. die Verbindung sollte funktionieren 
     2. Sollte das Connect nach eine gewissen Zeit nicht zu stande kommen wird ein ssid und pswd vorgegeben, und damit ein AccessPoint erstellt 
-    3. Ober einen Webserver kann dann die neue WLAN Verbindung eingegeben und persitent gespeichert werden
-    4 beim restart wird das WLAN aus dem Pers Speicher geladen und ein Connect versuchet. 
+    3. Ober einen Webserver kann dann die neue WLAN Verbindung eingegeben und persistent gespeichert werden
+    4. beim restart wird das WLAN aus dem Pers Speicher geladen und ein Connect versuchet. 
     5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
 */
 
