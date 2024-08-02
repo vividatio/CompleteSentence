@@ -28,13 +28,15 @@ public:
 
     int restart();
 
+    bool check_dst();
+
     int update_via_NTP();
 
     bool check();
 
     String getTimeString();
 
-    unsigned char hour12(bool *pm);
+    unsigned char hour12(bool *pm, bool *dst);
     unsigned char minutes();
     unsigned char seconds();
 

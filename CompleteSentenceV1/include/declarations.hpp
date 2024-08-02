@@ -43,11 +43,14 @@ typedef struct time {
   unsigned char Minutes;
   unsigned char Seconds;
   bool pm;
+  bool dst;
+  
   time() {
     Hours = 0;
     Minutes = 0;
     Seconds = 0;
     pm = false;
+    dst = false;
   }
 } timeT, *timeP;
 

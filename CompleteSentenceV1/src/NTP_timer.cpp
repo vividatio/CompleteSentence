@@ -17,7 +17,7 @@ CNTPtimer::~CNTPtimer(){
 }
 
 int CNTPtimer::init() {
-    m_error_code = ERR_NO_ERROR;    
+    m_error_code = ERR_NO_ERROR;
     
     m_utcOffsetInSeconds = 3600;
     m_timeNTPClient = new NTPClient(m_ntpUDP, "europe.pool.ntp.org", m_utcOffsetInSeconds, m_TimeUpdateInterval);
@@ -70,13 +70,30 @@ String CNTPtimer::getTimeString() {
     return m_timeNTPClient->getFormattedTime();
 }
 
+bool CNTPtimer::check_dst() {
+  bool b1 = false;
+  
+
+  m_error_code = false;
+  
+  long dst_start = 24 * 31 * m_timeNTPClient->
+
+
+  /* letzter Sonntag, Maerz, 3:00 ---> letzter Sonttag Oktober 2:00 */
+
+  
+  if ( m_timeNTPClient->getDay() == 6 )
+
+  return b1;
+}
+
 
 
 /* 
     gibt die Stunde von 0 bis 12 aus. 
     Update: nun auch in Verbindung mit der Sommerzeit. 
 */
-unsigned char CNTPtimer::hour12(bool *pm) {
+unsigned char CNTPtimer::hour12(bool *pm, bool *dst) {
   m_error_code = ERR_NO_ERROR;
   
   unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
@@ -86,6 +103,9 @@ unsigned char CNTPtimer::hour12(bool *pm) {
        0:00 bis 11:59 -> am 
       12:00 bis 23:59 -> pm
 */
+
+*dst = check_dst();
+
 
   *pm = (12 <= NTPHours); 
   unsigned char result = *pm ? (NTPHours - 12) : NTPHours;

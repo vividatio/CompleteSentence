@@ -61,6 +61,11 @@ int fnc_idle() {
 
 
 /* init state function */
+
+/**********************************************************************************************************/
+/* ******************************************** init state function ************************************* */
+/**********************************************************************************************************/
+
 inline int fnc_init() {
   Serial.println("Doing precalculations... ");
   LED.generate_mapping_table(true);
@@ -76,7 +81,7 @@ inline int fnc_init() {
   }
   
   /* interne Uhrzeit-Variablen initialisieren */
-  actualTime.Hours = NTP.hour12(&actualTime.pm);
+  actualTime.Hours = NTP.hour12(&actualTime.pm, &actualTime.dst);
   actualTime.Minutes = NTP.minutes();
   actualTime.Seconds = NTP.seconds();
 
@@ -88,6 +93,10 @@ inline int fnc_init() {
 
   return ERR_NO_ERROR;
 }
+
+/**********************************************************************************************************/
+/* ******************************************** Displaytest function ************************************* */
+/**********************************************************************************************************/
 
 inline int fnc_Displaytest() {
   LED.clear();
@@ -101,7 +110,9 @@ inline int fnc_Displaytest() {
 
 unsigned char oldMinutes = 61;
 
-/* loop state function */
+/**********************************************************************************************************/
+/* ******************************************** loop state function ************************************* */
+/**********************************************************************************************************/
 inline int fnc_loop() {
 
   /* Interval neu beginnen */
@@ -177,7 +188,6 @@ void setup() {
   delay( 200 ); // power-up safety delay
 
   Serial.begin(115200);
-
 
   /* WIFI init */
   //wifi.init("i come from a LAN down under", "12345678987654321");
