@@ -81,7 +81,7 @@ inline int fnc_init() {
   }
   
   /* interne Uhrzeit-Variablen initialisieren */
-  actualTime.Hours = NTP.hour12(&actualTime.pm, &actualTime.dst);
+  actualTime.Hours = NTP.hour12(&actualTime.pm);
   actualTime.Minutes = NTP.minutes();
   actualTime.Seconds = NTP.seconds();
 

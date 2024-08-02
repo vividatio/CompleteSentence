@@ -4,17 +4,21 @@
 
 #include "WiFI_misc.hpp"
 
-#include <NTPClient.h>
+#include <time.h>
 
+
+//#define MY_NTP_SERVER "at.pool.ntp.org"
+#define MY_NTP_SERVER "ptbtime1.ptb.de"
+#define MY_TZ "CET-1CEST,M3.5.0/02,M10.5.0/03"   
 
 class CNTPtimer {
 private:
     int             m_error_code;
+    time_t          m_now;
+    tm              m_tm;
 
-    long            m_utcOffsetInSeconds;
-    unsigned long   m_TimeUpdateInterval;
+/* maybe obsolete */    unsigned long   m_TimeUpdateInterval;
   
-    NTPClient       *m_timeNTPClient;
     WiFiUDP         m_ntpUDP;
 
 
@@ -28,15 +32,13 @@ public:
 
     int restart();
 
-    bool check_dst();
-
     int update_via_NTP();
 
     bool check();
 
     String getTimeString();
 
-    unsigned char hour12(bool *pm, bool *dst);
+    unsigned char hour12(bool *pm);
     unsigned char minutes();
     unsigned char seconds();
 

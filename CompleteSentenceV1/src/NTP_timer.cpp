@@ -3,29 +3,19 @@
 
 
 CNTPtimer::CNTPtimer(){
-    m_utcOffsetInSeconds = 3600;  // Sekunden
     m_TimeUpdateInterval = 600000; // Millisekunden
-
-    m_timeNTPClient = NULL;
 }
 
 CNTPtimer::~CNTPtimer(){
-    if (m_timeNTPClient != NULL) {
-      delete m_timeNTPClient;
-    }
 
 }
 
 int CNTPtimer::init() {
-    m_error_code = ERR_NO_ERROR;
-    
-    m_utcOffsetInSeconds = 3600;
-    m_timeNTPClient = new NTPClient(m_ntpUDP, "europe.pool.ntp.org", m_utcOffsetInSeconds, m_TimeUpdateInterval);
-    
-    /* NTP Client Setup */
-    m_timeNTPClient->begin();
+  m_error_code = ERR_NO_ERROR;
 
-    return m_error_code;
+  configTime(MY_TZ, MY_NTP_SERVER); // init the esp timer lib
+
+  return m_error_code;
 }
 
 
@@ -34,9 +24,8 @@ int CNTPtimer::restart() {
     m_error_code = ERR_NO_ERROR;
 
     // erst alles schliessen
-    if (m_timeNTPClient != NULL) {
-      delete m_timeNTPClient;
-    }
+
+
     // neu erstellen
     init();
 
@@ -48,8 +37,7 @@ int CNTPtimer::restart() {
 
 bool CNTPtimer::check() {
   
-return m_timeNTPClient->isTimeSet();
-
+return true;
 }
 
 int CNTPtimer::update_via_NTP() {
@@ -58,54 +46,44 @@ int CNTPtimer::update_via_NTP() {
   if (false == check()) {
     restart();
   }
-  m_timeNTPClient->update(); // das wird intern nur danch dem Timeinterval Ausgefuehrt (constructor)
-  
+ 
+  time(&m_now);                       // read the current time
+  localtime_r(&m_now, &m_tm);         // update the structure tm with the current time
+    
   return m_error_code;
 }
 
 String CNTPtimer::getTimeString() {
 
-    m_error_code = ERR_NO_ERROR;
+  m_error_code = ERR_NO_ERROR;
 
-    return m_timeNTPClient->getFormattedTime();
+  char   TimeCharStr[128];
+
+  sprintf(TimeCharStr, "%4d.%2d.%2d_%2d:%2d:%2d (dst: %1d)", m_tm.tm_year+1900, \
+    m_tm.tm_mon + 1, \
+    m_tm.tm_mday, \
+    m_tm.tm_hour, \
+    m_tm.tm_min, \
+    m_tm.tm_sec, \
+    m_tm.tm_isdst);
+
+  String TimeString = String(TimeCharStr);
+  return TimeString; 
+    
 }
-
-bool CNTPtimer::check_dst() {
-  bool b1 = false;
-  
-
-  m_error_code = false;
-  
-  long dst_start = 24 * 31 * m_timeNTPClient->
-
-
-  /* letzter Sonntag, Maerz, 3:00 ---> letzter Sonttag Oktober 2:00 */
-
-  
-  if ( m_timeNTPClient->getDay() == 6 )
-
-  return b1;
-}
-
-
 
 /* 
     gibt die Stunde von 0 bis 12 aus. 
-    Update: nun auch in Verbindung mit der Sommerzeit. 
 */
-unsigned char CNTPtimer::hour12(bool *pm, bool *dst) {
+unsigned char CNTPtimer::hour12(bool *pm) {
   m_error_code = ERR_NO_ERROR;
   
-  unsigned char NTPHours = (unsigned char)m_timeNTPClient->getHours();
-
+  unsigned char NTPHours = (unsigned char)m_tm.tm_hour;
 
 /* Info: 
        0:00 bis 11:59 -> am 
       12:00 bis 23:59 -> pm
 */
-
-*dst = check_dst();
-
 
   *pm = (12 <= NTPHours); 
   unsigned char result = *pm ? (NTPHours - 12) : NTPHours;
@@ -117,10 +95,10 @@ unsigned char CNTPtimer::hour12(bool *pm, bool *dst) {
 
 unsigned char CNTPtimer::minutes(){
   m_error_code = ERR_NO_ERROR;
-  return (unsigned char)m_timeNTPClient->getMinutes();
+  return (unsigned char)m_tm.tm_min;
 }
 
 unsigned char CNTPtimer::seconds(){
   m_error_code = ERR_NO_ERROR;
-  return (unsigned char)m_timeNTPClient->getSeconds();
+  return (unsigned char)m_tm.tm_sec;
 }

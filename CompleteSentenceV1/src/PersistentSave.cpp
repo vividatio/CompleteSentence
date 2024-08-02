@@ -23,7 +23,7 @@ int CPersistentSave::init() {
 
 int CPersistentSave::write_string(String str, int offset) {
     m_error_code = ERR_NO_ERROR;
-    for (int i = 0; i < str.length(); i++) {
+    for (unsigned int i = 0; i < str.length(); i++) {
         m_EEPROM.write(DataOffset + offset + i, str[i]); 
     }
     m_EEPROM.write(DataOffset + offset + str.length(), '\0'); // 0 terminirter string 
