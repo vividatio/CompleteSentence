@@ -36,12 +36,9 @@ CWIFI       wifi;
 CLEDControl LED;
 CNTPtimer   NTP;
 
-
-
 /* ****************************************************************************************************************** */
 /* *************************************************** state functions ********************************************** */
 /* ****************************************************************************************************************** */
-
 
 
 /* Globale Check-Variablen fuer den init-State */
@@ -54,13 +51,6 @@ int fnc_idle() {
   
   return ERR_NO_ERROR;
 }
-
-
-
-
-
-
-/* init state function */
 
 /**********************************************************************************************************/
 /* ******************************************** init state function ************************************* */
@@ -81,7 +71,7 @@ inline int fnc_init() {
   }
   
   /* interne Uhrzeit-Variablen initialisieren */
-  actualTime.Hours = NTP.hour12(&actualTime.pm, &actualTime.dst);
+  actualTime.Hours = NTP.hour12(&actualTime.pm);
   actualTime.Minutes = NTP.minutes();
   actualTime.Seconds = NTP.seconds();
 
@@ -124,6 +114,9 @@ inline int fnc_loop() {
   
     /* Refreshtime ausloesen */
     NTP.update_via_NTP();
+
+    Serial.println( NTP.getTimeString() );
+
 
 #ifdef DEBUG
     actualTime.Hours = NTP.hour12(&actualTime.pm);

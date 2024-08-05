@@ -4,18 +4,18 @@
 
 #include "WiFI_misc.hpp"
 
-#include <NTPClient.h>
+//#include <NTPClient.h>
 
+#include <time.h>
 
 class CNTPtimer {
 private:
     int             m_error_code;
 
-    long            m_utcOffsetInSeconds;
-    unsigned long   m_TimeUpdateInterval;
-  
-    NTPClient       *m_timeNTPClient;
     WiFiUDP         m_ntpUDP;
+
+    time_t          m_now;                         // this are the seconds since Epoch (1970) - UTC
+    tm              m_tm;                                
 
 
 public:
@@ -28,15 +28,13 @@ public:
 
     int restart();
 
-    bool check_dst();
-
     int update_via_NTP();
 
     bool check();
 
     String getTimeString();
 
-    unsigned char hour12(bool *pm, bool *dst);
+    unsigned char hour12(bool *pm);
     unsigned char minutes();
     unsigned char seconds();
 
