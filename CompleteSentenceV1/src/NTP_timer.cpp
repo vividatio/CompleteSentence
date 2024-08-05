@@ -2,11 +2,9 @@
 
 CNTPtimer::CNTPtimer(){
   m_now = 0;
-
 }
 
 CNTPtimer::~CNTPtimer(){
-
 }
 
 #define MY_NTP_SERVER "europe.pool.ntp.org"           
@@ -20,7 +18,6 @@ int CNTPtimer::init() {
 
   return m_error_code;
 }
-
 
 int CNTPtimer::restart() {
     m_error_code = ERR_NO_ERROR;
