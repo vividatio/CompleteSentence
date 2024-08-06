@@ -21,13 +21,11 @@ constexpr unsigned int MAXIMAL_MILLIAMPERE = 3000;
 #define _DEBUG
 
 /* Error Codes */
-#define ERR_NO_ERROR            0
-#define ERR_STD_ERROR           -1
+#define ERR_NO_ERROR              0
+#define ERR_STD_ERROR             -1
 
-#define ERR_EEPROM_WRITE_COMMIT -100
-#define ERR_EEPROM_SSID_LENGTH -110
-#define ERR_EEPROM_PWD_LENGTH -111
-#define ERR_EEPROM_MISC_LENGTH -112
+#define ERR_LITTLE_FS_INIT_FAILED -100
+
 
 /* Types */
 typedef enum tState {

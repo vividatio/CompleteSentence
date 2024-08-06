@@ -99,6 +99,10 @@ int CWIFI::init(const char * ssid, const char * passwd) {
         this->print();
     }
 
+    /* set reconnection true */
+    WiFi.setAutoReconnect(true);
+    WiFi.persistent(true);
+
    // nun wird der WebServer initialisiert
     WebServerP = new AsyncWebServer(80);
 
