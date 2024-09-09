@@ -15,7 +15,7 @@ public:
 
     int init();
 
-
+    int get_WiFi_Data(String& SSID, String& Password);
 
 
 };

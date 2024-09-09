@@ -24,8 +24,9 @@ constexpr unsigned int MAXIMAL_MILLIAMPERE = 3000;
 #define ERR_NO_ERROR              0
 #define ERR_STD_ERROR             -1
 
-#define ERR_LITTLE_FS_INIT_FAILED -100
-
+#define ERR_LITTLE_FS_INIT_FAILED             -100
+#define ERR_LITTLE_FS_FILE_NOT_FOUND          -101
+#define ERR_LITTLEFS_WIFI_DELIMITER_NOT_FOUND -110
 
 /* Types */
 typedef enum tState {

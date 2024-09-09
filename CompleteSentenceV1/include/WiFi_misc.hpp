@@ -14,9 +14,9 @@ class CWIFI {
 private:
     int             m_erroro_code;
 
+   /* Parameter from Web-Server */
     AsyncWebServer* WebServerP;
 
-    /* Parameter from Web-Server */
     
 public:
 

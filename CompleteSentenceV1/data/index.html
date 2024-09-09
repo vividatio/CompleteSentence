@@ -3,51 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RGB Slider und Netzwerk-Einstellungen</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>WiFi-Einstellungen & RGB-Controller</title>
+    
+    <!-- CSS richtig verlinken -->
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <h1>RGB Farb-Slider und Netzwerk-Einstellungen</h1>
-
-    <div class="input-container">
-        <label for="ssid">SSID:</label>
-        <input type="text" id="ssid" placeholder="Enter SSID">
+    <!-- WiFi-Einstellungen -->
+    <div class="wifi-section">
+        <h2>WiFi-Einstellungen</h2>
+        <div class="input-group">
+            <label for="ssid">SSID:</label>
+            <input type="text" id="ssid" name="ssid">
+        </div>
+        
+        <div class="input-group">
+            <label for="password">Passwort:</label>
+            <input type="password" id="password" name="password">
+        </div>
     </div>
-    <div class="input-container">
-        <label for="password">Passwort:</label>
-        <input type="password" id="password" placeholder="Enter Passwort">
+
+    <!-- Optische Trennung -->
+    <hr>
+
+    <!-- RGB-Einstellungen -->
+    <div class="rgb-section">
+        <h2>RGB-Controller</h2>
+
+        <!-- Rot-Slider -->
+        <label for="r-slider">Rot (R): <span id="r-value">0</span></label>
+        <input type="range" id="r-slider" min="0" max="255" value="0">
+        <br>
+        
+        <!-- Grün-Slider -->
+        <label for="g-slider">Grün (G): <span id="g-value">0</span></label>
+        <input type="range" id="g-slider" min="0" max="255" value="0">
+        <br>
+
+        <!-- Blau-Slider -->
+        <label for="b-slider">Blau (B): <span id="b-value">0</span></label>
+        <input type="range" id="b-slider" min="0" max="255" value="0">
+        <br>
+
+        <!-- Farbe-Vorschau ohne Helligkeit -->
+        <div>
+            <h3>Farben Vorschau (ohne Helligkeit)</h3>
+            <div id="color-preview"></div>
+        </div>
+    </div>
+    
+     <!-- Optische Trennung -->
+     <hr>
+     
+    <div class="h-section">
+        <h2>Helligkeit-Controller</h2>
+        <!-- Helligkeit-Slider -->
+        <label for="brightness-slider">Helligkeit: <span id="brightness-value">0</span></label>
+        <input type="range" id="brightness-slider" min="0" max="255" value="0">
+        <br>
+
+        <!-- Vorschau mit Helligkeit -->
+        <div>
+            <h3>Farben Vorschau (mit Helligkeit)</h3>
+            <div id="brightness-preview"></div>
+        </div>
     </div>
 
-    <div class="slider-container">
-        <label for="red">Rot: <span id="redValue">128</span></label>
-        <input type="range" id="red" min="0" max="255" value="128" oninput="updateColor()">
-    </div>
-    <div class="slider-container">
-        <label for="green">Grün: <span id="greenValue">128</span></label>
-        <input type="range" id="green" min="0" max="255" value="128" oninput="updateColor()">
-    </div>
-    <div class="slider-container">
-        <label for="blue">Blau: <span id="blueValue">128</span></label>
-        <input type="range" id="blue" min="0" max="255" value="128" oninput="updateColor()">
-    </div>
-    <div class="color-box" id="colorBox"></div>
-
-    <script>
-        function updateColor() {
-            const red = document.getElementById('red').value;
-            const green = document.getElementById('green').value;
-            const blue = document.getElementById('blue').value;
-
-            document.getElementById('redValue').innerText = red;
-            document.getElementById('greenValue').innerText = green;
-            document.getElementById('blueValue').innerText = blue;
-
-            const rgbColor = `rgb(${red}, ${green}, ${blue})`;
-            document.getElementById('colorBox').style.backgroundColor = rgbColor;
-        }
-
-        // Initiales Update der Farbe
-        updateColor();
-    </script>
+    <!-- JavaScript richtig verlinken -->
+    <script src="assets/js/script.js"></script>
 </body>
 </html>

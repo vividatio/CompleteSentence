@@ -20,6 +20,11 @@
 #include "NTP_timer.hpp"
 
 /* ****************************************************************************************************************** */
+/* ************************************************** LittleFS Verwendung ******************************************* */
+/* ****************************************************************************************************************** */
+#include "PersistentSave.hpp"
+
+/* ****************************************************************************************************************** */
 /* ************************************************** globale Variablen ********************************************* */
 /* ****************************************************************************************************************** */
 
@@ -36,6 +41,9 @@ CWIFI       wifi;
 CLEDControl LED;
 CNTPtimer   NTP;
 
+CPersistentSave LiFS;
+
+
 /* ****************************************************************************************************************** */
 /* *************************************************** state functions ********************************************** */
 /* ****************************************************************************************************************** */
@@ -43,7 +51,6 @@ CNTPtimer   NTP;
 
 /* Globale Check-Variablen fuer den init-State */
 bool displayTestFinished = false;
-
 
 /* idle state function */
 int fnc_idle() {
@@ -182,18 +189,25 @@ void setup() {
 
   Serial.begin(115200);
 
+  /* hier stehem Init-daten drin. und die Webdaten fuer die Web-Config */
+  LiFS.init();
+
+  String SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
+  String PASSWORD =  "62113249";/* "56710588139461966274" */
+  /* Read Data from LittleFS */  
+  LiFS.get_WiFi_Data(SSID, PASSWORD);
+
   /* WIFI init */
-  //wifi.init("i come from a LAN down under", "12345678987654321");
-  wifi.init("Oh Happy Day", "62113249");
+   wifi.init(SSID.c_str(),PASSWORD.c_str());
   
-  //wifi.init("i come from a LAN down under", "56710588139461966274");
+  /* --------------------- Here should wifi running ---------------------- */
 
   /* init FastLed */
   LED.init();
 
   /* NTP_timer init */
   NTP.init();
-  
+ 
   /* Initialisierungen */
 
   fnc_idle();

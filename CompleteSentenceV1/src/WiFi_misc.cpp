@@ -3,10 +3,7 @@
 #include "html.hpp"
 
 
-
-
-
-/* AccessPoint WLAN */
+/* AccessPoint WLAN for initalization */
 const char *AP_ssid     = "WLAN VON DER UHR";
 const char *AP_password = "08154711";
 
