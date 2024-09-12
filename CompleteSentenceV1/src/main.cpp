@@ -194,11 +194,20 @@ void setup() {
 
   String SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
   String PASSWORD =  "62113249";/* "56710588139461966274" */
+
   /* Read Data from LittleFS */  
-  LiFS.get_WiFi_Data(SSID, PASSWORD);
+  int returnValue = LiFS.get_WiFi_Data(SSID, PASSWORD);
+
+  if (returnValue != ERR_NO_ERROR) {
+    /* not found? try this one */
+    SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
+    PASSWORD =  "62113249";/* "56710588139461966274" */
+  }
 
   /* WIFI init */
    wifi.init(SSID.c_str(),PASSWORD.c_str());
+  
+
   
   /* --------------------- Here should wifi running ---------------------- */
 

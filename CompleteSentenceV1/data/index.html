@@ -9,67 +9,74 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <!-- WiFi-Einstellungen -->
-    <div class="wifi-section">
-        <h2>WiFi-Einstellungen</h2>
-        <div class="input-group">
-            <label for="ssid">SSID:</label>
-            <input type="text" id="ssid" name="ssid">
+    <!-- Background festlegen -->
+    <div class="background-container">
+        <!-- nothing to show now -->
+
+        <!-- WiFi-Einstellungen -->
+        <div class="wifi-section">
+            <h2>WiFi-Einstellungen</h2>
+            <div class="input-group">
+                <label for="ssid">SSID:</label>
+                <input type="text" id="ssid" name="ssid">
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Passwort:</label>
+                <input type="password" id="password" name="password">
+            </div>
+        </div>
+
+        <!-- Optische Trennung -->
+        <hr>
+
+        <!-- RGB-Einstellungen -->
+        <div class="rgb-section">
+            <h2>RGB-Controller</h2>
+
+            <!-- Rot-Slider -->
+            <label for="r-slider">Rot (R): <span id="r-value">0</span></label>
+            <input type="range" id="r-slider" min="0" max="255" value="0">
+            <br>
+            
+            <!-- Grün-Slider -->
+            <label for="g-slider">Grün (G): <span id="g-value">0</span></label>
+            <input type="range" id="g-slider" min="0" max="255" value="0">
+            <br>
+
+            <!-- Blau-Slider -->
+            <label for="b-slider">Blau (B): <span id="b-value">0</span></label>
+            <input type="range" id="b-slider" min="0" max="255" value="0">
+            <br>
+
+            <!-- Farbe-Vorschau ohne Helligkeit -->
+            <div>
+                <h3>Farben Vorschau (ohne Helligkeit)</h3>
+                <div id="color-preview"></div>
+            </div>
         </div>
         
-        <div class="input-group">
-            <label for="password">Passwort:</label>
-            <input type="password" id="password" name="password">
-        </div>
-    </div>
-
-    <!-- Optische Trennung -->
-    <hr>
-
-    <!-- RGB-Einstellungen -->
-    <div class="rgb-section">
-        <h2>RGB-Controller</h2>
-
-        <!-- Rot-Slider -->
-        <label for="r-slider">Rot (R): <span id="r-value">0</span></label>
-        <input type="range" id="r-slider" min="0" max="255" value="0">
-        <br>
+        <!-- Optische Trennung -->
+        <hr>
         
-        <!-- Grün-Slider -->
-        <label for="g-slider">Grün (G): <span id="g-value">0</span></label>
-        <input type="range" id="g-slider" min="0" max="255" value="0">
-        <br>
+        <div class="h-section">
+            <h2>Helligkeit-Controller</h2>
+            <!-- Helligkeit-Slider -->
+            <label for="brightness-slider">Helligkeit: <span id="brightness-value">0</span></label>
+            <input type="range" id="brightness-slider" min="0" max="255" value="0">
+            <br>
 
-        <!-- Blau-Slider -->
-        <label for="b-slider">Blau (B): <span id="b-value">0</span></label>
-        <input type="range" id="b-slider" min="0" max="255" value="0">
-        <br>
-
-        <!-- Farbe-Vorschau ohne Helligkeit -->
-        <div>
-            <h3>Farben Vorschau (ohne Helligkeit)</h3>
-            <div id="color-preview"></div>
+            <!-- Vorschau mit Helligkeit -->
+            <div>
+                <h3>Farben Vorschau (mit Helligkeit)</h3>
+                <div id="brightness-preview"></div>
+            </div>
         </div>
-    </div>
-    
-     <!-- Optische Trennung -->
-     <hr>
-     
-    <div class="h-section">
-        <h2>Helligkeit-Controller</h2>
-        <!-- Helligkeit-Slider -->
-        <label for="brightness-slider">Helligkeit: <span id="brightness-value">0</span></label>
-        <input type="range" id="brightness-slider" min="0" max="255" value="0">
-        <br>
 
-        <!-- Vorschau mit Helligkeit -->
-        <div>
-            <h3>Farben Vorschau (mit Helligkeit)</h3>
-            <div id="brightness-preview"></div>
-        </div>
-    </div>
+        <!-- JavaScript richtig verlinken -->
+        <script src="assets/js/script.js"></script>
 
-    <!-- JavaScript richtig verlinken -->
-    <script src="assets/js/script.js"></script>
+    </div>
 </body>
+
 </html>

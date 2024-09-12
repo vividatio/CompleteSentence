@@ -10,13 +10,14 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
+
+
 class CWIFI {
 private:
     int             m_erroro_code;
 
    /* Parameter from Web-Server */
     AsyncWebServer* WebServerP;
-
     
 public:
 
@@ -27,13 +28,18 @@ public:
 
     int init(const char * ssid, const char * passwd);
 
-    int get_SliederRed();
-    
-    int get_SliederGreen();
-
-    int get_SliederBlue();
-
     int print();
+
+    /* error 404 callback fct*/
+    void notFound(AsyncWebServerRequest *request);
+
 };
+
+/* Websocket functionalities */
+    void notifyClients( String msg );                                                                   /* send msg to all Clients */
+    void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len);    /* handle Msg from client */
+    void onWebsocketsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, \
+                           void *arg, uint8_t *data, size_t len);                                       /* */
+    
 
 #endif

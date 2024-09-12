@@ -1,3 +1,67 @@
+
+// WebSocket Handle misc 
+let socket = new WebSocket(`ws://${window.location.hostname}/ws`);
+
+socket.onopen = function (e) {
+    console.log("Websockets Verbindung hergstellt!");
+};
+
+socket.onmessage = function (event) {
+    
+    /* JSON Object expected */
+    const data = JSON.parse(event.data);
+    
+    // Zugriff auf die Werte
+    const str_SSID = data.str_SSID;
+    const str_Password = data.str_Password;
+    const int_Red = data.int_Red;
+    const int_Green = data.int_Green;
+    const int_Blue = data.int_Blue;
+    const int_Bright = data.int_Bright;
+
+    /* Set the Values */
+    const SSID = document.getElementById("ssid");
+    const Password = document.getElementById("Password");
+    const rSlider = document.getElementById("r-slider");
+    const gSlider = document.getElementById("g-slider");
+    const bSlider = document.getElementById("b-slider");
+    const hSlider = document.getElementById("brightness-slider");
+
+    /* update Values incl. dispatch */
+    SSID.value = str_SSID;
+    SSID.dispatchEvent(new Event("ínput"));
+
+    Password.value = str_Password;
+    Password.dispatchEvent(new Event("ínput"));
+
+
+    rSlider.value = int_Red;
+    rSlider.dispatchEvent(new Event("ínput"));
+
+    gSlider.value = int_Green;
+    gSlider.dispatchEvent(new Event("ínput"));
+
+    bSlider.value = int_Blue;
+    bSlider.dispatchEvent(new Event("ínput"));
+
+
+    hSlider.value = int_Bright;
+    hSlider.dispatchEvent(new Event("ínput"));
+};
+
+socket.onclose = function (event) {
+    if (event.wasClean) {
+        console.log('Verbindung zum Server wurde geschlossen!');
+    } else {
+        console.log('Verbindung verloren: Timeout!');
+    }
+};
+
+socket.onerror = function (error) {
+    console.log('[error]:', error.message);
+};
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const rSlider = document.getElementById("r-slider");
     const gSlider = document.getElementById("g-slider");

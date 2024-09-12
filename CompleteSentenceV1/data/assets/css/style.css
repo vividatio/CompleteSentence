@@ -1,8 +1,23 @@
 /* Allgemeines Styling für Abstände und Schrift */
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 20; /* Entfernt die Standard-Margin */
+
 }
+
+.background-container {
+    background-image: url('../images/Vividatio.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: repeat;
+    opacity: 1; /* Reduziert die Deckkraft des Containers */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
 
 /* Styling für die WiFi-Einstellungen */
 .wifi-section {

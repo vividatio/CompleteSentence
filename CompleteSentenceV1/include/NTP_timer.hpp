@@ -4,8 +4,6 @@
 
 #include "WiFI_misc.hpp"
 
-//#include <NTPClient.h>
-
 #include <time.h>
 
 class CNTPtimer {
