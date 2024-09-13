@@ -1,6 +1,12 @@
 #include "WiFi_misc.hpp"
 
-#include <LittleFS.h>
+
+
+/* Global Variable to last intance of CWIFI. Very horrorble Hack */
+CWIFI* Pseudo_WiFi = NULL;
+
+CPersistentSave* l_LittleFS; 
+
 
 
 /* WebSocket holder */
@@ -13,6 +19,10 @@ AsyncWebSocket* WebSocketP;
 const char *AP_ssid     = "WLAN VON DER UHR";
 const char *AP_password = "08154711";
 
+
+/* Values, set by Webfrontend*/
+String SSID_from_Client;
+String Password_from_Client;
 
 
 String sliderValueRed = "255";
@@ -43,16 +53,24 @@ String processor(const String& var){
 
 
 CWIFI::CWIFI() {
-    // nix
+    /* damit gebe ich nicht-member_methoden zugriff auf die aktuelle instanz. da es nur eine Instanz geben wird, ist das ok */
+    Pseudo_WiFi = this; 
+    
  }
 
 CWIFI::~CWIFI() {
-    //nix
+    Pseudo_WiFi = NULL; 
 }
 
-CWIFI::CWIFI(const char * ssid, const char * passwd) {
+CWIFI::CWIFI(const char * ssid, const char * passwd, CPersistentSave* LiFS) {
+
+
+
+    m_erroro_code = init(ssid, passwd, LiFS);
+
+    /* damit gebe ich nicht-member_methoden zugriff auf die aktuelle instanz. da es nur eine Instanz geben wird, ist das ok */
+    Pseudo_WiFi = this; 
     
-    m_erroro_code = init(ssid, passwd);
 }
 
 
@@ -71,9 +89,22 @@ void CWIFI::notFound(AsyncWebServerRequest *request) {
     5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
 */
 
-int CWIFI::init(const char * ssid, const char * passwd) {
+int CWIFI::init(const char * ssid, const char * passwd, CPersistentSave* LiFS) {
+
+    //INIT Varialble 
+    SSID_from_Client = String(ssid);
+    Password_from_Client = String(passwd);
+
+    l_LittleFS = LiFS;
+
 
     bool StartAsSoftAP = false;
+
+
+    /* Falls eine Connection etableirt ist: beenden. */
+    if ( WiFi.isConnected() ) {
+        WiFi.disconnect();
+    }
 
     /* regular StartUp */
     WiFi.begin(ssid, passwd);
@@ -105,6 +136,10 @@ int CWIFI::init(const char * ssid, const char * passwd) {
     } else {
         Serial.println("Connected like defined ");
         /* Wenn externes WLAN connected */
+
+        // SSID und Password in wifi_data.txt abspeichern 
+        LiFS->set_WiFi_Data(SSID_from_Client, Password_from_Client);
+
         // Lokale IP-Adresse im Seriellen Monitor ausgeben und Server starten
         this->print();
     }
@@ -159,23 +194,17 @@ int CWIFI::init(const char * ssid, const char * passwd) {
 void onWebsocketsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, void *arg, uint8_t *data, size_t len){
 
     if ( type == WS_EVT_CONNECT ){
-#ifdef DEBUG
-         Serial.println("Client Verbinung wurde hergestellt!");
-#endif
+        Serial.println("Client Verbinung wurde hergestellt!");
         client->text("user:welcome");
     }
 
 
     if ( type == WS_EVT_DISCONNECT ){
-#ifdef DEBUG
         Serial.println("Client Verbindung wurde beendet!");
-#endif  
     }
 
     if ( type == WS_EVT_DATA ){
-#ifdef DEBUG
         Serial.println("Websocket-Nachricht empfangen");
-#endif
         handleWebSocketMessage ( client, arg, data, len );
     }
 }
@@ -208,6 +237,35 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
             Serial.println("Ein neuer Client hat sich verbunden");
 #endif
             notifyClients("user:new");
+        }
+
+        /* call for actual ssid, password, r,g,b and h data */
+        if (message.indexOf("need_initial_data") >= 0 ) {
+#ifdef DEBUG
+            Serial.println("Client sgat: ich brauche initialdaten!");
+#endif
+
+            /* Collect Data an send to all Clients */
+            /* for now, manualy constructed JSON Obj */
+            String JSON_Data =  " { \n \
+                                \"string1\": \"some ssid\", \n \
+                                \"string2\": \"some password\", \n \
+                                \"int1\": 123, \n \
+                                \"int2\": 251, \n \
+                                \"int3\": 189, \n \
+                                \"int4\": 125 \n \
+                                }\" ";
+
+            notifyClients(JSON_Data);
+        }
+
+        if (message.indexOf("reconect_wifi") >= 0 ) {
+            /* coll CWIFI-Opject methode, reconnect_with_new WIFI() */ 
+
+            Pseudo_WiFi->init(SSID_from_Client.c_str(), Password_from_Client.c_str(), l_LittleFS);            
+
+
+
         }
     }
 }

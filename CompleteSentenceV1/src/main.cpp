@@ -157,7 +157,8 @@ inline int fnc_loop() {
 
 
     /* TEST: Farbe aus dem Webinterface hoeln */
-    LED.set_onColor( wifi.get_SliederRed(), wifi.get_SliederGreen(), wifi.get_SliederBlue() );
+//  ToDo:    LED.set_onColor( wifi.get_SliederRed(), wifi.get_SliederGreen(), wifi.get_SliederBlue() );
+
 
     /* LEDArray fuellen mit der MappingTable */
     LED.fill_LED_Buffer();
@@ -200,15 +201,20 @@ void setup() {
 
   if (returnValue != ERR_NO_ERROR) {
     /* not found? try this one */
-    SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
-    PASSWORD =  "62113249";/* "56710588139461966274" */
+    // SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
+    // PASSWORD =  "62113249";/* "56710588139461966274" */
+    
+    // just to force locale AccessPoint
+    SSID = "Reiner"; /* "i come from a LAN down under" */
+    PASSWORD =  "Unsinn";/* "56710588139461966274" */
+
   }
 
   /* WIFI init */
-   wifi.init(SSID.c_str(),PASSWORD.c_str());
+   wifi.init(SSID.c_str(),PASSWORD.c_str(), &LiFS);
   
 
-  
+
   /* --------------------- Here should wifi running ---------------------- */
 
   /* init FastLed */

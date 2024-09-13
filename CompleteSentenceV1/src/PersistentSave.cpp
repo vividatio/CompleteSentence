@@ -54,3 +54,18 @@ int CPersistentSave::get_WiFi_Data(String& SSID, String& Password) {
 
     return m_error_code;
 }
+
+int CPersistentSave::set_WiFi_Data(String SSID, String Password) {
+    m_error_code = ERR_NO_ERROR;
+    
+    /* wifi Datei oeffen */
+    File wififile = LittleFS.open("wifi_data.txt", "w");
+    
+    String content = SSID + ":" + Password; 
+
+    wififile.write(content.c_str(), content.length() );
+
+    Serial.println("wirte SSID and PAssword to wifi_data.txt on LittleFS");
+    
+    return m_error_code;
+}

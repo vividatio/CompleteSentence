@@ -16,6 +16,8 @@ public:
     int init();
 
     int get_WiFi_Data(String& SSID, String& Password);
+    int set_WiFi_Data(String SSID, String Password);
+    
 
 
 };

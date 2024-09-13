@@ -10,7 +10,7 @@
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-
+#include "PersistentSave.hpp"
 
 class CWIFI {
 private:
@@ -24,9 +24,9 @@ public:
     CWIFI();
     ~CWIFI();
    
-    CWIFI(const char * ssid, const char * passwd);
+    CWIFI(const char * ssid, const char * passwd, CPersistentSave* LiFS);
 
-    int init(const char * ssid, const char * passwd);
+    int init(const char * ssid, const char * passwd, CPersistentSave* LiFS);
 
     int print();
 
@@ -35,7 +35,7 @@ public:
 
 };
 
-/* Websocket functionalities */
+/* Websocket functionalities not ion class, this caused compiler trouble */
     void notifyClients( String msg );                                                                   /* send msg to all Clients */
     void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *data, size_t len);    /* handle Msg from client */
     void onWebsocketsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, AwsEventType type, \

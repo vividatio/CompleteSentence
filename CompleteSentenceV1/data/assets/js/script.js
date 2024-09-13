@@ -7,7 +7,19 @@ socket.onopen = function (e) {
 };
 
 socket.onmessage = function (event) {
-    
+
+    /* JSON Object
+ {
+    "string1": "Hello",
+    "string2": "World",
+    "int1": 123,
+    "int2": 456,
+    "int3": 789,
+    "int4": 101
+}
+    */
+
+
     /* JSON Object expected */
     const data = JSON.parse(event.data);
     
@@ -60,6 +72,24 @@ socket.onclose = function (event) {
 socket.onerror = function (error) {
     console.log('[error]:', error.message);
 };
+
+
+// call for initial data
+window.onload = function() {
+    
+    socket.send("need_initial_data");
+
+    console.log('call for initial data done');
+}
+
+function reconnectWiFi() {
+   
+    console.log('try to call for reconnectin wifi');
+
+    socket.send("reconect_wifi");
+   
+    console.log('call for reconnectin wifi done');
+}
 
 
 document.addEventListener("DOMContentLoaded", function () {

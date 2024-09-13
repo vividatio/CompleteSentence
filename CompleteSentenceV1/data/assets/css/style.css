@@ -33,6 +33,13 @@ body {
     margin-bottom: 10px;
 }
 
+.recon-btn {
+    display: flex;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
 .input-group label {
     width: 100px; /* Festgelegte Breite für gleichmäßiges Alignment */
     margin-right: 10px;
