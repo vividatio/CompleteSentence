@@ -189,6 +189,11 @@ void setup() {
   delay( 200 ); // power-up safety delay
 
   Serial.begin(115200);
+  
+  Serial.println("Wait....");
+  delay(3000);
+  Serial.println("Wait again...");
+  delay(3000);
 
   /* hier stehem Init-daten drin. und die Webdaten fuer die Web-Config */
   LiFS.init();
@@ -203,7 +208,7 @@ void setup() {
     /* not found? try this one */
     // SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
     // PASSWORD =  "62113249";/* "56710588139461966274" */
-    
+
     // just to force locale AccessPoint
     SSID = "Reiner"; /* "i come from a LAN down under" */
     PASSWORD =  "Unsinn";/* "56710588139461966274" */
@@ -245,7 +250,7 @@ void loop() {
 
 
   } else {
-    /* Displaytest - hier, weil das delaz im Setup nicht funktioniert */    
+    /* Displaytest - hier, weil das delay im Setup nicht funktioniert */    
     fnc_Displaytest();
     displayTestFinished = true;
     delay(2000);

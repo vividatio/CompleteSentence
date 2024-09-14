@@ -167,8 +167,8 @@ int CWIFI::init(const char * ssid, const char * passwd, CPersistentSave* LiFS) {
     });
 
    /* my nice WordClock Image */
-    WebServerP->on("/assets/images/favicon-96.png", HTTP_GET, [](AsyncWebServerRequest *request){
-        request->send(LittleFS, "/assets/images/favicon-96.png", "image/png");
+    WebServerP->on("/assets/images/Vividatio.webp", HTTP_GET, [](AsyncWebServerRequest *request){
+        request->send(LittleFS, "/assets/images/Vividatio.webp", "image/webp");
 
     });
 
@@ -195,7 +195,7 @@ void onWebsocketsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client, Aws
 
     if ( type == WS_EVT_CONNECT ){
         Serial.println("Client Verbinung wurde hergestellt!");
-        client->text("user:welcome");
+// ToDo: wirft Fehler weil kein JSON        client->text("user:welcome");
     }
 
 
@@ -236,7 +236,7 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
 #ifdef DEBUG
             Serial.println("Ein neuer Client hat sich verbunden");
 #endif
-            notifyClients("user:new");
+// ToDo: wirft fehler Weil kein JSON            notifyClients("user:new");
         }
 
         /* call for actual ssid, password, r,g,b and h data */
@@ -247,23 +247,19 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
 
             /* Collect Data an send to all Clients */
             /* for now, manualy constructed JSON Obj */
-            String JSON_Data =  " { \n \
-                                \"string1\": \"some ssid\", \n \
-                                \"string2\": \"some password\", \n \
-                                \"int1\": 123, \n \
-                                \"int2\": 251, \n \
-                                \"int3\": 189, \n \
-                                \"int4\": 125 \n \
-                                }\" ";
+            String JSON_Data =  " {\"str_SSID\": \"some ssid\", \"str_Password\": \"some password\", \"int_Red\": 123, \"int_Green\": 251, \"int_Blue\": 189, \"int_Bright\": 125} ";
+            // Debugausgabe
+            Serial.println(JSON_Data);
 
             notifyClients(JSON_Data);
         }
 
         if (message.indexOf("reconect_wifi") >= 0 ) {
             /* coll CWIFI-Opject methode, reconnect_with_new WIFI() */ 
-
-            Pseudo_WiFi->init(SSID_from_Client.c_str(), Password_from_Client.c_str(), l_LittleFS);            
-
+// FIXME: Uebler crash ...
+            if (Pseudo_WiFi != NULL) {
+                Pseudo_WiFi->init(SSID_from_Client.c_str(), Password_from_Client.c_str(), l_LittleFS);            
+            }
 
 
         }

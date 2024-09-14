@@ -10,12 +10,12 @@ socket.onmessage = function (event) {
 
     /* JSON Object
  {
-    "string1": "Hello",
-    "string2": "World",
-    "int1": 123,
-    "int2": 456,
-    "int3": 789,
-    "int4": 101
+    "str_SSID": "Hello",
+    "str_Password": "World",
+    "int_Red": 123,
+    "int_Green": 456,
+    "int_Blue": 789,
+    "int_Bright": 101
 }
     */
 
@@ -33,7 +33,7 @@ socket.onmessage = function (event) {
 
     /* Set the Values */
     const SSID = document.getElementById("ssid");
-    const Password = document.getElementById("Password");
+    const Password = document.getElementById("password");
     const rSlider = document.getElementById("r-slider");
     const gSlider = document.getElementById("g-slider");
     const bSlider = document.getElementById("b-slider");
@@ -41,24 +41,23 @@ socket.onmessage = function (event) {
 
     /* update Values incl. dispatch */
     SSID.value = str_SSID;
-    SSID.dispatchEvent(new Event("ínput"));
+    SSID.dispatchEvent(new Event("input"));
 
-    Password.value = str_Password;
-    Password.dispatchEvent(new Event("ínput"));
-
-
+    Password.value = str_Password;    
+    Password.dispatchEvent(new Event("input"));
+    
     rSlider.value = int_Red;
-    rSlider.dispatchEvent(new Event("ínput"));
-
+    rSlider.dispatchEvent(new Event("input"));
+    
     gSlider.value = int_Green;
-    gSlider.dispatchEvent(new Event("ínput"));
-
+    gSlider.dispatchEvent(new Event("input"));
+    
     bSlider.value = int_Blue;
-    bSlider.dispatchEvent(new Event("ínput"));
-
-
+    bSlider.dispatchEvent(new Event("input"));
+    
     hSlider.value = int_Bright;
-    hSlider.dispatchEvent(new Event("ínput"));
+    hSlider.dispatchEvent(new Event("input"));
+
 };
 
 socket.onclose = function (event) {
