@@ -216,7 +216,7 @@ void setup() {
   }
 
   /* WIFI init */
-   wifi.init(SSID.c_str(),PASSWORD.c_str(), &LiFS);
+   wifi.init(SSID.c_str(),PASSWORD.c_str(), &wifi, &LED, &LiFS);
   
 
 

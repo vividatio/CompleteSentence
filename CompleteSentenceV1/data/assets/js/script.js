@@ -8,18 +8,6 @@ socket.onopen = function (e) {
 
 socket.onmessage = function (event) {
 
-    /* JSON Object
- {
-    "str_SSID": "Hello",
-    "str_Password": "World",
-    "int_Red": 123,
-    "int_Green": 456,
-    "int_Blue": 789,
-    "int_Bright": 101
-}
-    */
-
-
     /* JSON Object expected */
     const data = JSON.parse(event.data);
     
@@ -72,14 +60,39 @@ socket.onerror = function (error) {
     console.log('[error]:', error.message);
 };
 
-
 // call for initial data
 window.onload = function() {
     
+    is_init = true;
+
     socket.send("need_initial_data");
 
     console.log('call for initial data done');
 }
+
+// SSID AND Password Change senders 
+function send_ssid() {
+    SSID_ID = document.getElementById("ssid");
+    const SSID_str = SSID_ID.value;
+    const sendstring ="change_ssid:" + SSID_str;
+
+    socket.send(sendstring);
+    
+    //debug
+    console.log(sendstring);
+}
+
+function send_password() {
+    PASSWORD_ID = document.getElementById("password");
+    const PASSWORD_str = PASSWORD_ID.value;
+    const sendstring = "change_password:" + PASSWORD_str;
+
+    socket.send(sendstring);
+
+    //debug
+    console.log(sendstring);
+}
+
 
 function reconnectWiFi() {
    
@@ -89,6 +102,7 @@ function reconnectWiFi() {
    
     console.log('call for reconnectin wifi done');
 }
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -105,6 +119,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const colorPreview = document.getElementById("color-preview");
     const brightnessPreview = document.getElementById("brightness-preview");
 
+    function send_sliders() {
+        const red = parseInt(rSlider.value);
+        const green = parseInt(gSlider.value);
+        const blue = parseInt(bSlider.value);
+        const bright = parseInt(brightnessSlider.value);
+
+        // let SliderStruct = {
+        //     val_red:red,
+        //     val_green:green,
+        //     val_blue:blue,
+        //     val_bright:bright
+        // };
+    
+        // const sendstring = "change_color:" + JSON.stringify(SliderStruct);
+
+        const sendstring = "change_color:" + String(red).padStart(3, '0') + "-" + String(green).padStart(3, '0') + "-" + String(blue).padStart(3, '0') + "-" + String(bright).padStart(3, '0') + "\0";
+    
+        socket.send(sendstring);
+    
+        // debug
+        console.log(sendstring);
+    }
+
+
+
+
+
     // Funktion, um die RGB-Farbe ohne Helligkeit in der Vorschau zu aktualisieren
     function updateColorPreview() {
         const r = parseInt(rSlider.value);
@@ -116,19 +157,24 @@ document.addEventListener("DOMContentLoaded", function () {
         bValue.textContent = b;
 
         colorPreview.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+
+         // send Slidervalues to Client 
+        send_sliders();
     }
 
     // Funktion, um die RGB-Farbe mit Helligkeit in der Vorschau zu aktualisieren
     function updateBrightnessPreview() {
-        const r = parseInt(rSlider.value);
-        const g = parseInt(gSlider.value);
-        const b = parseInt(bSlider.value);
         const brightness = parseInt(brightnessSlider.value);
 
         brightnessValue.textContent = brightness;
 
         brightnessPreview.style.backgroundColor = `rgb(${brightness}, ${brightness}, ${brightness})`;
+
+         // send Slidervalues to Client 
+        send_sliders();
     }
+
+    
 
     // Event Listener für Slider-Bewegungen
     rSlider.addEventListener("input", updateColorPreview);
@@ -139,4 +185,5 @@ document.addEventListener("DOMContentLoaded", function () {
     // Initiale Farbe anzeigen
     updateColorPreview();
     updateBrightnessPreview();
+   
 });

@@ -48,6 +48,14 @@ public:
     /* define Clock-Color */
     int set_onColor(int red, int green, int blue);
 
+    int get_onColor(int& red, int& green, int& blue);
+
+    int set_brightnes(int bright);
+
+    int get_brightnes();
+
+
+
     /* fuellt den led-Buffer vom framebuffer ins FastLED Array und benutzt dabei die MappingTabelle*/
     int fill_LED_Buffer();
     int fill_LED_Buffer_copy();

@@ -3,9 +3,9 @@
 
 
 /* Global Variable to last intance of CWIFI. Very horrorble Hack */
-CWIFI* Pseudo_WiFi = NULL;
-
-CPersistentSave* l_LittleFS; 
+CWIFI* Main_WiFi_Reference = NULL;
+CLEDControl* Main_LEDControl = NULL;
+CPersistentSave* Main_LittleFS = NULL; 
 
 
 
@@ -54,22 +54,20 @@ String processor(const String& var){
 
 CWIFI::CWIFI() {
     /* damit gebe ich nicht-member_methoden zugriff auf die aktuelle instanz. da es nur eine Instanz geben wird, ist das ok */
-    Pseudo_WiFi = this; 
-    
+    Main_WiFi_Reference = NULL; 
+    Main_LEDControl = NULL;
+    Main_LittleFS = NULL;
  }
 
 CWIFI::~CWIFI() {
-    Pseudo_WiFi = NULL; 
+    Main_WiFi_Reference = NULL;
+    Main_LEDControl = NULL;
+    Main_LittleFS = NULL; 
 }
 
-CWIFI::CWIFI(const char * ssid, const char * passwd, CPersistentSave* LiFS) {
+CWIFI::CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS) {
 
-
-
-    m_erroro_code = init(ssid, passwd, LiFS);
-
-    /* damit gebe ich nicht-member_methoden zugriff auf die aktuelle instanz. da es nur eine Instanz geben wird, ist das ok */
-    Pseudo_WiFi = this; 
+    m_erroro_code = init(ssid, passwd, MainWIFI, LEDControl, LiFS);
     
 }
 
@@ -89,14 +87,15 @@ void CWIFI::notFound(AsyncWebServerRequest *request) {
     5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
 */
 
-int CWIFI::init(const char * ssid, const char * passwd, CPersistentSave* LiFS) {
+int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl,  CPersistentSave* LiFS) {
 
     //INIT Varialble 
     SSID_from_Client = String(ssid);
     Password_from_Client = String(passwd);
 
-    l_LittleFS = LiFS;
-
+    Main_LittleFS = LiFS;
+    Main_LEDControl = LEDControl;
+    Main_WiFi_Reference = MainWIFI;
 
     bool StartAsSoftAP = false;
 
@@ -233,36 +232,101 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
         String message = String( (char *) data );
     
         if ( message.indexOf("connection:new") >= 0 ){
-#ifdef DEBUG
+
             Serial.println("Ein neuer Client hat sich verbunden");
-#endif
+
 // ToDo: wirft fehler Weil kein JSON            notifyClients("user:new");
+            return; // fertig
         }
 
         /* call for actual ssid, password, r,g,b and h data */
         if (message.indexOf("need_initial_data") >= 0 ) {
-#ifdef DEBUG
-            Serial.println("Client sgat: ich brauche initialdaten!");
-#endif
-
-            /* Collect Data an send to all Clients */
-            /* for now, manualy constructed JSON Obj */
-            String JSON_Data =  " {\"str_SSID\": \"some ssid\", \"str_Password\": \"some password\", \"int_Red\": 123, \"int_Green\": 251, \"int_Blue\": 189, \"int_Bright\": 125} ";
+            // String JSON_Data =  " {\"str_SSID\": \"some ssid\", \"str_Password\": \"some password\", \"int_Red\": 123, \"int_Green\": 251, \"int_Blue\": 189, \"int_Bright\": 125} ";
             // Debugausgabe
-            Serial.println(JSON_Data);
+            //  Serial.println(JSON_Data);
+            //  send
+            //  notifyClients(JSON_Data);
 
-            notifyClients(JSON_Data);
+            int r, g, b, h;
+            Main_LEDControl->get_onColor(r, g, b);
+            h = Main_LEDControl->get_brightnes();
+
+            char jsonString[256];
+            sprintf(jsonString, "{\"str_SSID\": \"%s\", \"str_Password\": \"%s\", \"int_Red\": %3d, \"int_Green\": %3d, \"int_Blue\": %3d, \"int_Bright\": %3d}", \
+                SSID_from_Client.c_str(), \
+                Password_from_Client.c_str(), \
+                r, g, b, h);
+
+            // Debugausgabe
+            // Serial.println(jsonString);
+
+            /* send it to client(s) */
+            notifyClients(jsonString);
+            
+            return; // fertig
         }
 
         if (message.indexOf("reconect_wifi") >= 0 ) {
             /* coll CWIFI-Opject methode, reconnect_with_new WIFI() */ 
-// FIXME: Uebler crash ...
-            if (Pseudo_WiFi != NULL) {
-                Pseudo_WiFi->init(SSID_from_Client.c_str(), Password_from_Client.c_str(), l_LittleFS);            
+        
+            // in LittleFS speichern
+            Main_LittleFS->set_WiFi_Data(SSID_from_Client, Password_from_Client);
+
+            //  Todo: Reconnect ausfuehren
+
+            return; // fertig
+        }
+
+        if (message.indexOf("change_ssid") >= 0) {
+            String SSID_String = message.substring(message.indexOf(":") + 1);
+
+            SSID_from_Client = SSID_String;
+
+            Serial.printf("Websocket got SSID: %s \n", SSID_from_Client.c_str());
+
+            return; // fertig
+        }
+
+
+        if (message.indexOf("change_password") >= 0) {
+
+            String Password_String = message.substring(message.indexOf(":") + 1);
+
+            Password_from_Client = Password_String;
+
+            Serial.printf("Websocket got Password: %s \n", Password_from_Client.c_str());
+
+            return; // fertig
+        }
+
+        if (message.indexOf("change_color") >= 0) {
+
+            String Color_String = message.substring(message.indexOf(":") + 1);
+
+            /* setColor*/
+            // ToDo: Set Color
+
+            int red_send = Color_String.substring(0, 3).toInt();
+            int green_send = Color_String.substring(4, 7).toInt();
+            int blue_send = Color_String.substring(8, 11).toInt();
+            int bright_send = Color_String.substring(12, 15).toInt();
+
+            // Serial.printf("Websocket got Color: %s \n", Color_String.c_str());
+
+            // Serial.println("interpret:");
+            // Serial.printf("red = %d: grenn = %d; blue = %d, bright = %d\n", red_send, green_send, blue_send, bright_send);
+
+            /* set Color of LEDs */
+            if (Main_LEDControl != NULL) {
+                Main_LEDControl->set_onColor(red_send, green_send, blue_send);
+                Main_LEDControl->set_brightnes(bright_send);
             }
 
-
+            return; // fertig
         }
+
+
+
     }
 }
 

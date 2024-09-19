@@ -92,16 +92,57 @@ int CLEDControl::clear() {
 
 int CLEDControl::set_onColor(int red, int green, int blue){
   /* fuer meinen Code ist es wichtig, das eine on-FArbe nicht [0 0 0] ist*/
-  if (red == 0) red = 10;
-  if (green == 0) green = 10;
-  if (blue == 0) blue = 10;
+  m_error_code = ERR_NO_ERROR;
+
+  if (red == 0) red = 1;
+  if (green == 0) green = 1;
+  if (blue == 0) blue = 1;
 
   m_onColor.r = red;
   m_onColor.g = green;
   m_onColor.b = blue;
 
+  //debug
+  //Serial.printf("Set LED-OnColor(%03d,%03d,%03d)", red, green, blue);
+
   return m_error_code;
 }
+
+int CLEDControl::get_onColor(int& red, int& green, int& blue) {
+  m_error_code = ERR_NO_ERROR;
+
+  red = m_onColor.r;
+  green = m_onColor.g;
+  blue = m_onColor.b;
+
+  return m_error_code;
+}
+
+
+int CLEDControl::set_brightnes(int bright) {
+  m_error_code = ERR_NO_ERROR;
+
+  FastLED.setBrightness(bright);
+
+  //Serial.printf("Set LED-Brightnes(%03d)", bright);
+
+  return m_error_code;
+}
+
+  int CLEDControl::get_brightnes() {
+    m_error_code = ERR_NO_ERROR;
+
+    int bright = FastLED.getBrightness();
+
+  return bright;
+
+}
+
+
+
+
+
+
 
 int CLEDControl::fill_LED_Buffer_copy() {
   m_error_code = ERR_NO_ERROR;

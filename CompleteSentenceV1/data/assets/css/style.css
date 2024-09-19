@@ -5,6 +5,13 @@ body {
 
 }
 
+.website_title {
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
 .background-container {
     background-image: url('../images/Vividatio.webp');
     background-size: cover;

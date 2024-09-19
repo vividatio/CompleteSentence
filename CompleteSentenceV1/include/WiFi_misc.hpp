@@ -6,11 +6,17 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 
+
+
 /* fuer den Webserver */
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
+
+/* for data communication */
 #include "PersistentSave.hpp"
+#include "LED_control.hpp"
+
 
 class CWIFI {
 private:
@@ -24,9 +30,9 @@ public:
     CWIFI();
     ~CWIFI();
    
-    CWIFI(const char * ssid, const char * passwd, CPersistentSave* LiFS);
+    CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS);
 
-    int init(const char * ssid, const char * passwd, CPersistentSave* LiFS);
+    int init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS);
 
     int print();
 

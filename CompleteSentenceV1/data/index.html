@@ -13,17 +13,25 @@
     <div class="background-container">
         <!-- nothing to show now -->
 
+        <hr>
+
+        <div class="website_title">
+            <h1> WordClock Einstellungen</h1>
+        </div>
+
+        <hr>
+
         <!-- WiFi-Einstellungen -->
         <div class="wifi-section">
             <h2>WiFi-Einstellungen</h2>
             <div class="input-group">
                 <label for="ssid">SSID:</label>
-                <input type="text" id="ssid" name="ssid">
+                <input type="text" id="ssid" name="ssid" onchange="send_ssid()">
             </div>
             
             <div class="input-group">
                 <label for="password">Passwort:</label>
-                <input type="password" id="password" name="password">
+                <input type="password" id="password" name="password" onchange="send_password()">
             </div>
 
             <!-- Reconnect Button -->
@@ -77,6 +85,8 @@
                 <div id="brightness-preview"></div>
             </div>
         </div>
+
+        <hr>
 
         <!-- JavaScript richtig verlinken -->
         <script src="assets/js/script.js"></script>

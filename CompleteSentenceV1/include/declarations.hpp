@@ -4,7 +4,7 @@
 /* LED zeug */
 #define LED_PIN     3 /*RX */
 #define NUM_LEDS    153 /* 17*9 */
-constexpr unsigned char BRIGHTNESS = 50;
+constexpr unsigned char BRIGHTNESS = 128;
 constexpr unsigned int MAXIMAL_MILLIAMPERE = 3000;
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
