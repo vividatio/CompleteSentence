@@ -156,10 +156,6 @@ inline int fnc_loop() {
     }
 
 
-    /* TEST: Farbe aus dem Webinterface hoeln */
-//  ToDo:    LED.set_onColor( wifi.get_SliederRed(), wifi.get_SliederGreen(), wifi.get_SliederBlue() );
-
-
     /* LEDArray fuellen mit der MappingTable */
     LED.fill_LED_Buffer();
 
@@ -177,6 +173,30 @@ inline int fnc_loop() {
   }
 
   return ERR_NO_ERROR;
+}
+
+
+/* ****************************************************************************************************************** */
+/* *************************************************** calm-function  *********************************************** */
+/* ****************************************************************************************************************** */
+
+
+void calm_init(){
+  
+  LED.int_calm_mode();
+
+  LED.init_calm_seeds();
+
+
+
+}
+
+
+void calm_loop() {
+
+  LED.render_calm();
+  LED.show();
+
 }
 
 
@@ -229,10 +249,11 @@ void setup() {
   NTP.init();
  
   /* Initialisierungen */
-
   fnc_idle();
 
   fnc_init();
+
+  calm_init();
 
 }
 
@@ -240,12 +261,27 @@ void setup() {
 /* ****************************************************************************************************************** */
 /* *************************************************** globaler Loop ************************************************ */
 /* ****************************************************************************************************************** */
-void loop() {
-  
-  if (displayTestFinished) {
-    /* Normaler Loop*/
-    fnc_loop();
 
+int mode = 0;
+
+void loop() {
+
+
+
+
+  if (displayTestFinished) {
+    
+    
+    if (0 == mode) { 
+      /* Normaler Loop*/
+      fnc_loop();
+    }
+
+    if (1 == mode) {
+      random16_add_entropy( random());
+
+      calm_loop();
+    }
 
 
 

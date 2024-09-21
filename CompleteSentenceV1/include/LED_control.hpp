@@ -66,6 +66,13 @@ public:
     int set_LEDs_range_direct(uint16_t pos, uint16_t width);
     int set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color);
 
+
+    void int_calm_mode();
+    void init_calm_seeds();
+    void render_calm();
+
+
+
     int setHour(unsigned char hour);
     int decodeTime(timeP actualTimePointer);
     int toggleSecondsLED();

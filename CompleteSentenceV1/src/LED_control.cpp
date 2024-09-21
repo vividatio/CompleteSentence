@@ -198,6 +198,74 @@ int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color)
   return m_error_code;
 }
 
+
+/* ******************************************** Calm - Fire - Mpde ******************************************** */
+
+CRGBPalette16 gFirePalette;
+
+
+unsigned char FB[LED_HEIGHT][LED_WIDTH];
+
+
+
+void CLEDControl::int_calm_mode() {
+
+  for (int y = 0; y < LED_HEIGHT; y++) {
+    for (int x = 0; x < LED_WIDTH; x++) {
+      FB[y][x] = 0;
+      FB[y][x] = 0;
+    }
+  }
+
+  gFirePalette = HeatColors_p;
+  /* later --- 
+      uint8_t colorindex = scale8( heat[j], 240);
+      CRGB color = ColorFromPalette( gPal, colorindex); 
+  */
+
+  random16_add_entropy( random());
+}
+
+void CLEDControl::init_calm_seeds() {
+
+  // letzte Zeile
+  int y = LED_HEIGHT - 1; 
+
+  for (int x = 0; x < LED_WIDTH; x++) {
+    FB[y][x] = random8();
+  }
+}
+
+void CLEDControl::render_calm() {
+  int i = 0;
+
+
+  for (int y = 0; y < LED_HEIGHT-1; y++) { // nicht bis ganz unten
+    for (int x = 1; x < LED_WIDTH-1; x++) {
+      i = y+1;
+      FB[y][x] = (FB[i][x-1] + FB[i][x] + FB[i][x+1]) << 2;
+     }
+  }
+
+  uint8_t colorindex;
+  
+  /* copy to framebuffer */
+  i = 0;
+  for (int y = 0; y < LED_HEIGHT; y++) { // nicht bis ganz unten
+    for (int x = 0; x < LED_WIDTH; x++) {
+      colorindex = scale8( FB[y][x] , 240);
+      framebuffer[i++] = ColorFromPalette(gFirePalette , colorindex);
+     }
+  }
+  
+  fill_LED_Buffer_copy(); // framebuffer in den LED-Buffer kopieren. mit Mapping
+
+}
+
+/* ****************************************** All for time-rendering ****************************************** */
+
+
+
 int CLEDControl::setHour(unsigned char hour) {
   m_error_code = ERR_NO_ERROR;
 
