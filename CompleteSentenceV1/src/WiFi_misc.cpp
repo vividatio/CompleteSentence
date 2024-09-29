@@ -7,6 +7,7 @@ CWIFI* Main_WiFi_Reference = NULL;
 CLEDControl* Main_LEDControl = NULL;
 CPersistentSave* Main_LittleFS = NULL; 
 
+int * Main_Mode_Ptr = NULL;
 
 
 /* WebSocket holder */
@@ -65,9 +66,9 @@ CWIFI::~CWIFI() {
     Main_LittleFS = NULL; 
 }
 
-CWIFI::CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS) {
+CWIFI::CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr) {
 
-    m_erroro_code = init(ssid, passwd, MainWIFI, LEDControl, LiFS);
+    m_erroro_code = init(ssid, passwd, MainWIFI, LEDControl, LiFS, ModePtr);
     
 }
 
@@ -87,7 +88,7 @@ void CWIFI::notFound(AsyncWebServerRequest *request) {
     5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
 */
 
-int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl,  CPersistentSave* LiFS) {
+int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl,  CPersistentSave* LiFS, int* ModePtr) {
 
     //INIT Varialble 
     SSID_from_Client = String(ssid);
@@ -96,6 +97,10 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
     Main_LittleFS = LiFS;
     Main_LEDControl = LEDControl;
     Main_WiFi_Reference = MainWIFI;
+
+    Main_Mode_Ptr = ModePtr;
+
+
 
     bool StartAsSoftAP = false;
 
@@ -297,6 +302,17 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
             Serial.printf("Websocket got Password: %s \n", Password_from_Client.c_str());
 
             return; // fertig
+        }
+
+        if (message.indexOf("change_mode") >= 0) {
+            /* zwei Modi implemented yet */
+            *Main_Mode_Ptr = (*Main_Mode_Ptr) + 1;
+            
+            if  (*Main_Mode_Ptr > 1) *Main_Mode_Ptr = 0;
+            
+            Serial.printf("Change mode to [%d]\n", *Main_Mode_Ptr);
+
+            return; //fertig
         }
 
         if (message.indexOf("change_color") >= 0) {

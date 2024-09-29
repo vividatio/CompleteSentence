@@ -33,6 +33,8 @@ unsigned long   prevLEDArrayMillis = 0;
 unsigned long   prevLEDMillis = 0;
 unsigned long   actualMillis = millis(); 
 
+int Mode = 0;
+
 uint16_t        GPCnt = 0;
 
 timeT           actualTime;
@@ -185,10 +187,6 @@ void calm_init(){
   
   LED.int_calm_mode();
 
-  LED.init_calm_seeds();
-
-
-
 }
 
 
@@ -236,7 +234,7 @@ void setup() {
   }
 
   /* WIFI init */
-   wifi.init(SSID.c_str(),PASSWORD.c_str(), &wifi, &LED, &LiFS);
+   wifi.init(SSID.c_str(),PASSWORD.c_str(), &wifi, &LED, &LiFS, &Mode);
   
 
 
@@ -262,25 +260,24 @@ void setup() {
 /* *************************************************** globaler Loop ************************************************ */
 /* ****************************************************************************************************************** */
 
-int mode = 0;
+
 
 void loop() {
-
-
-
 
   if (displayTestFinished) {
     
     
-    if (0 == mode) { 
-      /* Normaler Loop*/
+    if (0 == Mode) { 
+      /* Normaler Loop -- > die Uhr*/
       fnc_loop();
     }
 
-    if (1 == mode) {
-      random16_add_entropy( random());
+    if (1 == Mode) {
+      random16_add_entropy( random()); // etwas durcheinander machen 
 
       calm_loop();
+
+      delay(40);
     }
 
 

@@ -204,58 +204,72 @@ int CLEDControl::set_LEDs_range_direct(uint16_t pos, uint16_t width, CRGB color)
 CRGBPalette16 gFirePalette;
 
 
-unsigned char FB[LED_HEIGHT][LED_WIDTH];
+// Constants
+constexpr int CELLS = LED_HEIGHT * LED_WIDTH;
+constexpr int SEED_START = LED_WIDTH * (LED_HEIGHT - 2);
 
+// Range Random
+constexpr int RANDOM_START = 100;
+constexpr int RANDOM_END = 255;
+constexpr int RANDOM_RANGE = RANDOM_END - RANDOM_START;
+// Array
+unsigned char FB[CELLS];
 
 
 void CLEDControl::int_calm_mode() {
 
-  for (int y = 0; y < LED_HEIGHT; y++) {
-    for (int x = 0; x < LED_WIDTH; x++) {
-      FB[y][x] = 0;
-      FB[y][x] = 0;
-    }
+  // Clear
+  for (int i = 0; i < CELLS; i++) {
+      FB[i] = 0;
   }
 
-  gFirePalette = HeatColors_p;
-  /* later --- 
-      uint8_t colorindex = scale8( heat[j], 240);
-      CRGB color = ColorFromPalette( gPal, colorindex); 
-  */
+  //gFirePalette = HeatColors_p;
+  gFirePalette = CRGBPalette16( CRGB::Black, CRGB::Red, CRGB::Orange, CRGB::Yellow);
 
   random16_add_entropy( random());
 }
 
 void CLEDControl::init_calm_seeds() {
+   
+  for (int i = SEED_START; i < CELLS; i++) {
 
-  // letzte Zeile
-  int y = LED_HEIGHT - 1; 
-
-  for (int x = 0; x < LED_WIDTH; x++) {
-    FB[y][x] = random8();
+    FB[i] = random8(RANDOM_START, RANDOM_END);
+    //Serial.printf("%3d ", FB[i]);
   }
+
+  //Serial.println();
 }
 
 void CLEDControl::render_calm() {
-  int i = 0;
+  int adr = 0;
+
+  int val = 0;
+
+  init_calm_seeds();
 
 
-  for (int y = 0; y < LED_HEIGHT-1; y++) { // nicht bis ganz unten
-    for (int x = 1; x < LED_WIDTH-1; x++) {
-      i = y+1;
-      FB[y][x] = (FB[i][x-1] + FB[i][x] + FB[i][x+1]) << 2;
-     }
+  for (int i = 0; i < CELLS - LED_WIDTH -1 ; i++) {  // without last Line
+
+  //   // adr = i;
+  //   // val = (int)FB[adr];
+
+  FB[i] = (unsigned char)( ((int)FB[i + LED_WIDTH] * 2 + (int)FB[i + LED_WIDTH - 1] + (int)FB[i + LED_WIDTH + 1]) >> 3);
+
+  //   adr += i + (LED_WIDTH -1);
+  //   val += (int)FB[adr++];
+  //   val += (int)FB[adr++];
+  //   val += (int)FB[adr];
+
+  //   FB[i] = (unsigned char) (val >> 2) ; 
+
   }
 
-  uint8_t colorindex;
-  
   /* copy to framebuffer */
-  i = 0;
-  for (int y = 0; y < LED_HEIGHT; y++) { // nicht bis ganz unten
-    for (int x = 0; x < LED_WIDTH; x++) {
-      colorindex = scale8( FB[y][x] , 240);
-      framebuffer[i++] = ColorFromPalette(gFirePalette , colorindex);
-     }
+  for (int i = 0; i < CELLS; i++) {
+
+    byte colorindex = scale8(FB[i], 240);
+    
+    framebuffer[i] = ColorFromPalette(gFirePalette , colorindex);
   }
   
   fill_LED_Buffer_copy(); // framebuffer in den LED-Buffer kopieren. mit Mapping
