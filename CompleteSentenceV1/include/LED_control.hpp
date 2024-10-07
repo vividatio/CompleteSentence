@@ -35,7 +35,7 @@ public:
     CLEDControl();
     ~CLEDControl();
 
-    int init();
+    int init(int red, int green, int blue, int bright);
 
     int show();
 

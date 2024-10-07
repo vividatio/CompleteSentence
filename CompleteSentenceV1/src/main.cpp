@@ -216,32 +216,23 @@ void setup() {
   /* hier stehem Init-daten drin. und die Webdaten fuer die Web-Config */
   LiFS.init();
 
-  String SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
-  String PASSWORD =  "62113249";/* "56710588139461966274" */
+  String SSID = "no ssid"; /* "i come from a LAN down under" */
+  String PASSWORD =  "no password";/* "56710588139461966274" */
 
   /* Read Data from LittleFS */  
-  int returnValue = LiFS.get_WiFi_Data(SSID, PASSWORD);
+  LiFS.get_WiFi_Data(SSID, PASSWORD);
+ 
 
-  if (returnValue != ERR_NO_ERROR) {
-    /* not found? try this one */
-    // SSID = "Oh Happy Day"; /* "i come from a LAN down under" */
-    // PASSWORD =  "62113249";/* "56710588139461966274" */
-
-    // just to force locale AccessPoint
-    SSID = "Reiner"; /* "i come from a LAN down under" */
-    PASSWORD =  "Unsinn";/* "56710588139461966274" */
-
-  }
-
+  int red, gree, blue, bright;
+  LiFS.get_Color_Data(red, gree, blue, bright);
+  
   /* WIFI init */
    wifi.init(SSID.c_str(),PASSWORD.c_str(), &wifi, &LED, &LiFS, &Mode);
   
-
-
   /* --------------------- Here should wifi running ---------------------- */
 
   /* init FastLed */
-  LED.init();
+  LED.init(red, gree, blue, bright);
 
   /* NTP_timer init */
   NTP.init();

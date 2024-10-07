@@ -4,8 +4,16 @@
 /* LED zeug */
 #define LED_PIN     3 /*RX */
 #define NUM_LEDS    153 /* 17*9 */
-constexpr unsigned char BRIGHTNESS = 128;
-constexpr unsigned int MAXIMAL_MILLIAMPERE = 3000;
+
+// default color for onColor 
+#define DEFAULT_ONCOLOR_RED   "28"
+#define DEFAULT_ONCOLOR_GREEN "128"
+#define DEFAULT_ONCOLOR_BLUE  "228"
+
+//default brightness of LED-Stripe
+#define DEFAULT_BRIGHTNESS    "128"
+
+constexpr unsigned int MAXIMAL_MILLIAMPERE = 5000;
 #define LED_TYPE    WS2812B
 #define COLOR_ORDER GRB
 //#define COLOR_ORDER RGB

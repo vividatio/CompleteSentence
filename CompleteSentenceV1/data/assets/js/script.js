@@ -103,6 +103,17 @@ function reconnectWiFi() {
     console.log('call for reconnectin wifi done');
 }
 
+function saveColor() {
+
+    console.log("send: color seve");
+
+    socket.send("save_color");
+    
+}
+
+
+
+
 // mode change button function
 function changeMode() {
     console.log('send a [change mode]');

@@ -12,20 +12,15 @@ CLEDControl::~CLEDControl(){
   m_error_code = ERR_NO_ERROR;
 }
 
-int CLEDControl::init() {
+int CLEDControl::init(int red, int green, int blue, int bright) {
   m_error_code = ERR_NO_ERROR;
 
   //FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection( TypicalLEDStrip );
-  FastLED.setBrightness( BRIGHTNESS );
+  FastLED.setBrightness( bright );
 
   FastLED.setMaxPowerInMilliWatts(MAXIMAL_MILLIAMPERE);
 
-  // m_onColor.r = 64;
-  // m_onColor.g = 44;
-  // m_onColor.b = 14;
-
-  // m_onColor = CRGB::Fuchsia;
 
   m_onColor = CRGB::Orange;
 
@@ -241,26 +236,12 @@ void CLEDControl::init_calm_seeds() {
 }
 
 void CLEDControl::render_calm() {
-  int adr = 0;
-
-  int val = 0;
-
+ 
   init_calm_seeds();
-
 
   for (int i = 0; i < CELLS - LED_WIDTH -1 ; i++) {  // without last Line
 
-  //   // adr = i;
-  //   // val = (int)FB[adr];
-
   FB[i] = (unsigned char)( ((int)FB[i + LED_WIDTH] * 2 + (int)FB[i + LED_WIDTH - 1] + (int)FB[i + LED_WIDTH + 1]) >> 3);
-
-  //   adr += i + (LED_WIDTH -1);
-  //   val += (int)FB[adr++];
-  //   val += (int)FB[adr++];
-  //   val += (int)FB[adr];
-
-  //   FB[i] = (unsigned char) (val >> 2) ; 
 
   }
 

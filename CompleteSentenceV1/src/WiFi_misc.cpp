@@ -337,8 +337,16 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
                 Main_LEDControl->set_onColor(red_send, green_send, blue_send);
                 Main_LEDControl->set_brightnes(bright_send);
             }
-
             return; // fertig
+        }
+
+        if (message.indexOf("save_color") >= 0) {
+            int r, g, b, h;
+
+            Main_LEDControl->get_onColor(r,g,b);
+            h = Main_LEDControl->get_brightnes();
+
+            Main_LittleFS->set_Color_Data(r, g, b, h);
         }
 
 
