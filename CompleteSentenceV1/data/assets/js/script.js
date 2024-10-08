@@ -74,7 +74,7 @@ window.onload = function() {
 function send_ssid() {
     SSID_ID = document.getElementById("ssid");
     const SSID_str = SSID_ID.value;
-    const sendstring ="change_ssid:" + SSID_str;
+    const sendstring ="change_ssid:" + SSID_str + "_____finish";
 
     socket.send(sendstring);
     
@@ -85,7 +85,7 @@ function send_ssid() {
 function send_password() {
     PASSWORD_ID = document.getElementById("password");
     const PASSWORD_str = PASSWORD_ID.value;
-    const sendstring = "change_password:" + PASSWORD_str;
+    const sendstring = "change_password:" + PASSWORD_str + "_____finish";
 
     socket.send(sendstring);
 
@@ -108,7 +108,7 @@ function saveColor() {
     console.log("send: color seve");
 
     socket.send("save_color");
-    
+
 }
 
 

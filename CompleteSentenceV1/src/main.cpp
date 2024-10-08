@@ -219,12 +219,15 @@ void setup() {
   String SSID = "no ssid"; /* "i come from a LAN down under" */
   String PASSWORD =  "no password";/* "56710588139461966274" */
 
+  int RED = 100;
+  int GREEN = 100;
+  int BLUE = 100;
+  int BRIGHT = 100;
+
   /* Read Data from LittleFS */  
   LiFS.get_WiFi_Data(SSID, PASSWORD);
- 
 
-  int red, gree, blue, bright;
-  LiFS.get_Color_Data(red, gree, blue, bright);
+  LiFS.get_Color_Data(RED, GREEN, BLUE, BRIGHT);
   
   /* WIFI init */
    wifi.init(SSID.c_str(),PASSWORD.c_str(), &wifi, &LED, &LiFS, &Mode);
@@ -232,7 +235,7 @@ void setup() {
   /* --------------------- Here should wifi running ---------------------- */
 
   /* init FastLed */
-  LED.init(red, gree, blue, bright);
+  LED.init(RED, GREEN, BLUE, BRIGHT);
 
   /* NTP_timer init */
   NTP.init();

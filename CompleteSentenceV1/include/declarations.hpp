@@ -66,4 +66,9 @@ constexpr unsigned long cRefreshTimeInterval = 50 /*Sek*/ * 1000 /*ms*/;
 constexpr unsigned long cRefreshLEDArrayinterval =  1/* Sek*/ * 1000 /*ms*/;
 constexpr unsigned long cRefreshLEDinterval =  0 /* Sek*/ + 500 /*ms*/;
 
+/* *************************************** MACROS ************************************** */
+#define RESTART_ALL()  Serial.println("Restarting Wordclock..."); delay(500); ESP.restart()
+
+
+
 #endif

@@ -30,9 +30,9 @@ public:
     CWIFI();
     ~CWIFI();
    
-    CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr);
+    CWIFI(String ssid, String passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr);
 
-    int init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr);
+    int init(String ssid, String passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr);
 
     int print();
 

@@ -71,7 +71,8 @@ int CPersistentSave::set_WiFi_Data(String SSID, String Password) {
     //close file
     wififile.close();
 
-    Serial.println("wrote SSID and PAssword to wifi_data.txt on LittleFS");
+    Serial.println("wrote SSID and PAssword to wifi_data.txt on LittleFS with content:");
+    Serial.println(content);
     
     return m_error_code;
 }

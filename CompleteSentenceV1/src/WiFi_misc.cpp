@@ -1,7 +1,6 @@
 #include "WiFi_misc.hpp"
 
 
-
 /* Global Variable to last intance of CWIFI. Very horrorble Hack */
 CWIFI* Main_WiFi_Reference = NULL;
 CLEDControl* Main_LEDControl = NULL;
@@ -14,8 +13,6 @@ int * Main_Mode_Ptr = NULL;
 AsyncWebSocket* WebSocketP;
 /* Socket outside the class, because got callback troubles */
 
-
-
 /* AccessPoint WLAN for initalization */
 const char *AP_ssid     = "WLAN VON DER UHR";
 const char *AP_password = "08154711";
@@ -24,33 +21,6 @@ const char *AP_password = "08154711";
 /* Values, set by Webfrontend*/
 String SSID_from_Client;
 String Password_from_Client;
-
-
-String sliderValueRed = "255";
-String sliderValueGreen = "163";
-String sliderValueBlue = "1";
-
-
-int    SliderRed = 255;
-int    SliderGreen = 163;
-int    SliderBlue = 1;
-
-
-// Replaces placeholder with button section in your web page
-String processor(const String& var){
-  if (var == "SLIDERVALUE_RED"){
-    return sliderValueRed;
-  }
-  if (var == "SLIDERVALUE_GREEN"){
-    return sliderValueGreen;
-  }
-  if (var == "SLIDERVALUE_BLUE"){
-    return sliderValueBlue;
-  }
-
-
-  return String();
-}
 
 
 CWIFI::CWIFI() {
@@ -66,7 +36,7 @@ CWIFI::~CWIFI() {
     Main_LittleFS = NULL; 
 }
 
-CWIFI::CWIFI(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr) {
+CWIFI::CWIFI(String ssid, String passwd, CWIFI *MainWIFI, CLEDControl *LEDControl, CPersistentSave* LiFS, int* ModePtr) {
 
     m_erroro_code = init(ssid, passwd, MainWIFI, LEDControl, LiFS, ModePtr);
     
@@ -88,11 +58,11 @@ void CWIFI::notFound(AsyncWebServerRequest *request) {
     5. Erfolgreich? dann weiter mit dem NTP kram Nicht Erfolgreich: Dann zurueck zu 2. 
 */
 
-int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDControl *LEDControl,  CPersistentSave* LiFS, int* ModePtr) {
+int CWIFI::init(String ssid, String passwd, CWIFI *MainWIFI, CLEDControl *LEDControl,  CPersistentSave* LiFS, int* ModePtr) {
 
     //INIT Varialble 
-    SSID_from_Client = String(ssid);
-    Password_from_Client = String(passwd);
+    SSID_from_Client = ssid;
+    Password_from_Client = passwd;
 
     Main_LittleFS = LiFS;
     Main_LEDControl = LEDControl;
@@ -100,10 +70,7 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
 
     Main_Mode_Ptr = ModePtr;
 
-
-
     bool StartAsSoftAP = false;
-
 
     /* Falls eine Connection etableirt ist: beenden. */
     if ( WiFi.isConnected() ) {
@@ -111,9 +78,9 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
     }
 
     /* regular StartUp */
-    WiFi.begin(ssid, passwd);
+    WiFi.begin(SSID_from_Client, Password_from_Client);
 
-    Serial.print("connecting WIFI like defined ");
+    Serial.printf("connecting WIFI like defined (SSID:'%s'; Password:'%s'\n", SSID_from_Client.c_str(), Password_from_Client.c_str());
 
     int LoopCounter = 50; 
 
@@ -135,8 +102,9 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
 
         IPAddress myIP = WiFi.softAPIP();
         String mySSID = WiFi.softAPSSID();
-        Serial.print("IP Adresse des Access Points: ");
-        Serial.println(myIP);
+
+        Serial.printf("WordClock starts as Access Point with \n\tSSID    : '%s'\n\tPASSWORD: '%s'\n", mySSID.c_str(), myIP.toString().c_str());
+
     } else {
         Serial.println("Connected like defined ");
         /* Wenn externes WLAN connected */
@@ -178,10 +146,9 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
 
     /* ********************************** and now the WebSocket ******************************** */
     WebSocketP = new AsyncWebSocket("/ws");
-
-
     /* set Callback for WebSocket event handling */
     WebSocketP->onEvent(onWebsocketsEvent); 
+
     /* Tell the Server about WebSocket */
     WebServerP->addHandler( WebSocketP ); 
 
@@ -189,6 +156,19 @@ int CWIFI::init(const char * ssid, const char * passwd, CWIFI *MainWIFI, CLEDCon
 
     return ERR_NO_ERROR;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ********************************************************************************************************************** */
@@ -237,10 +217,7 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
         String message = String( (char *) data );
     
         if ( message.indexOf("connection:new") >= 0 ){
-
             Serial.println("Ein neuer Client hat sich verbunden");
-
-// ToDo: wirft fehler Weil kein JSON            notifyClients("user:new");
             return; // fertig
         }
 
@@ -262,9 +239,6 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
                 Password_from_Client.c_str(), \
                 r, g, b, h);
 
-            // Debugausgabe
-            // Serial.println(jsonString);
-
             /* send it to client(s) */
             notifyClients(jsonString);
             
@@ -277,13 +251,14 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
             // in LittleFS speichern
             Main_LittleFS->set_WiFi_Data(SSID_from_Client, Password_from_Client);
 
-            //  Todo: Reconnect ausfuehren
+            /* RESTART Macro */
+            RESTART_ALL();
 
             return; // fertig
         }
 
         if (message.indexOf("change_ssid") >= 0) {
-            String SSID_String = message.substring(message.indexOf(":") + 1);
+            String SSID_String = message.substring(message.indexOf(":") + 1, message.indexOf("_____finish"));
 
             SSID_from_Client = SSID_String;
 
@@ -294,8 +269,8 @@ void handleWebSocketMessage(AsyncWebSocketClient *client, void *arg, uint8_t *da
 
 
         if (message.indexOf("change_password") >= 0) {
-
-            String Password_String = message.substring(message.indexOf(":") + 1);
+            
+            String Password_String = message.substring(message.indexOf(":") + 1, message.indexOf("_____finish"));
 
             Password_from_Client = Password_String;
 
