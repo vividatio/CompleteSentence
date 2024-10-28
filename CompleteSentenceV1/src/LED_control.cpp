@@ -338,8 +338,15 @@ int CLEDControl::decodeTime(timeP actualTimePointer) {
     setHour((unsigned char) l_h);
   }
   
-  /* Vor und Nachmittag */
-  m_error_code = (l_pm) ? set_LEDs_range WORD_NACHMITTATGS : set_LEDs_range WORD_VORMITTAGS;
+
+  if ((l_h == 12) && (l_pm)) {
+    /* Vor und Nachmittag */
+    m_error_code = set_LEDs_range WORD_MITTAGS;
+  } else {
+    /* Vor und Nachmittag */
+    m_error_code = (l_pm) ? set_LEDs_range WORD_NACHMITTATGS : set_LEDs_range WORD_VORMITTAGS;
+  }
+
 
   /* Minutenpunkte */
   if ((l_m % 5) > 0) set_LEDs_range(136, minute_dots);

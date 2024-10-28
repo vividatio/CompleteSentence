@@ -69,7 +69,7 @@ rechts nach links) */
 
 #define WORD_EINS           (103, 4)
 #define WORD_VORMITTAGS     (108, 10)
-
+#define WORD_MITTAGS        (111, 7)
 
 #define WORD_NACHMITTATGS (122, 11)
 
